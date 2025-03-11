@@ -7,10 +7,10 @@ OBJ = $(SRC:.c=.o)
 NAME = philo
 
 all : $(NAME) clean
-	./$(NAME) 12 12 0 0
+	./$(NAME) 12 122 -2 -1
 
 $(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
 
 $(OBJ) : $(SRC)
 	$(CC) $(CFLAGS) -c $(SRC)
