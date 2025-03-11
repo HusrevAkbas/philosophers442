@@ -6,11 +6,12 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/10 13:24:28 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/11 22:35:46 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
 int	ft_isdigit(int c)
 {
 	if (c < '0' || c > '9')
@@ -23,18 +24,43 @@ int	check_overflow(long num)
 {
 	if (num > INT_MAX)
 	{
-		ft_get_or_set_errors("Argument is greater than INT_MAX\n");
+		ft_get_or_set_errors(NUMBER_GREATER_THAN_INT_MAX);
 		return (0);
 	}
 	else if (num < INT_MIN)
 	{
-		ft_get_or_set_errors("Argument is smaller than INT_MIN\n");
+		ft_get_or_set_errors(NUMBER_LESSER_THAN_INT_MIN);
 		return (0);
 	}
 	return (num);
 }
 
-int	ft_atoi_secure(char *num)
+int	check_non_numerical(char *num, int is_n)
+{
+	int	i;
+
+	i = 0;
+	while (num[i])
+	{
+		if (!ft_isdigit(num[i]))
+		{
+			ft_get_or_set_errors(NOT_A_NUMBER);
+			return (1);
+		}
+		i++;
+	}
+	if (i > 10)
+	{
+		if (is_n == -1)
+			ft_get_or_set_errors(NUMBER_GREATER_THAN_INT_MAX);
+		else
+			ft_get_or_set_errors(NUMBER_LESSER_THAN_INT_MIN);
+		return (1);
+	}
+	return (0);
+}
+
+int	ft_atoi_safe(char *num)
 {
 	long	a;
 	long	b;
@@ -49,8 +75,8 @@ int	ft_atoi_secure(char *num)
 			is_n *= -1;
 		num++;
 	}
-	if (!ft_isdigit(*num))
-		return ((long)ft_get_or_set_errors("Argument is not a number\n"));
+	if (check_non_numerical(num, is_n))
+		return (0);
 	a = 0;
 	while (ft_isdigit(*num))
 	{
