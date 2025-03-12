@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/12 11:57:24 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/12 15:53:32 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,9 @@ t_philo	**init_philos(char *arg)
 	t_philo	**philos;
 	int		count;
 	int		i;
-	pthread_mutex_t *mutex;
-	pthread_t *thread;
+	pthread_mutex_t	*mutex;
+	pthread_t	*thread;
+	t_timeval	tv;
 	
 	count = ft_atoi_safe(arg);
 	philos = malloc(sizeof(t_philo *) * (count + 1));
@@ -59,6 +60,9 @@ t_philo	**init_philos(char *arg)
 		thread = malloc(sizeof(pthread_t)); //check malloc fail
 		philos[i]->mutex = mutex;
 		philos[i]->thread = thread;
+		gettimeofday(&tv, NULL);
+		philos[i]->start_time.tv_sec = tv.tv_sec;
+		philos[i]->start_time.tv_usec = tv.tv_usec;
 		i++;
 	}
 	i = 0;
@@ -81,21 +85,35 @@ t_philo	**init_philos(char *arg)
 
 void	*routine(void	*arg)
 {
-	t_philo	*philos;
+	t_philo	*philo;
+	int		timestamp; //create a function to calculate timestamp
+	t_timeval	tv;
 	
-	philos = arg;
-	pthread_mutex_lock(philos->mutex);
-	pthread_mutex_lock(philos->mutex2);
-	philos->fork++;
-	printf("philo %d Eat fork: %d\n", philos->name, philos->fork);
-	sleep(2);
-	pthread_mutex_unlock(philos->mutex);
-	pthread_mutex_unlock(philos->mutex2);
-	philos->fork++;
-	printf("philo %d sleep fork %d\n", philos->name, philos->fork);
-	sleep(2);
-	philos->fork++;
-	printf("philo %d think fork: %d\n", philos->name, philos->fork);
+	philo = arg;
+	while (1)
+	{
+		printf("%li %d read start time sec\n", philo->start_time.tv_sec, philo->name);
+		printf("%li %d read start time usec\n", philo->start_time.tv_usec, philo->name);
+		sleep(1);
+		pthread_mutex_lock(philo->mutex);
+		pthread_mutex_lock(philo->mutex2);
+		gettimeofday(&tv, NULL);
+		timestamp = tv.tv_usec - philo->start_time.tv_usec;
+		printf("%i %d has taken a fork\n", timestamp / 1000, philo->name);
+		printf("philo %d is eating\n", philo->name);
+		usleep(500 * 1000);
+		pthread_mutex_unlock(philo->mutex);
+		pthread_mutex_unlock(philo->mutex2);
+		gettimeofday(&tv, NULL);
+		timestamp = tv.tv_usec - philo->start_time.tv_usec;
+		printf("%i %d is sleeping\n", timestamp / 1000, philo->name);
+		usleep(500 * 1000);
+		gettimeofday(&tv, NULL);
+		timestamp = tv.tv_usec - philo->start_time.tv_usec;
+		printf("%i %d is thinking \n", timestamp / 1000, philo->name);
+		usleep(500 * 1000);
+		//check if anyone dies
+	}
 	return (NULL);
 }
 
