@@ -1,13 +1,13 @@
 CFLAGS = -Wall -Werror -Wextra
 CC = cc
 
-SRC = philo.c errors.c utils.c
+SRC = philo.c errors.c argument_check.c utils.c
 OBJ = $(SRC:.c=.o)
 
 NAME = philo
 
 all : $(NAME) clean
-	./$(NAME) 6 110 211 111
+	./$(NAME) 3 900 300 400 10
 
 $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
