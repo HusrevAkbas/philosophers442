@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/11 22:54:10 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/12 11:55:33 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,23 @@ typedef struct s_philo
 	int				name;
 	int				fork;
 	int				*fork2;
+	int				hungry;
+	int				sleepy;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	pthread_t		*thread;
 	pthread_mutex_t	*mutex;
-	struct s_philo	*next;
+	pthread_mutex_t	*mutex2;
+	//struct s_philo	*next;
 }	t_philo;
+
+typedef struct s_queue
+{
+	int				philo_index;
+	struct s_queue	*next;
+}	t_queue;
+
 
 //Use NULL as argument to get errors. 
 //Use a text as argument to add an error.

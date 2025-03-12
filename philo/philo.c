@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/11 23:04:48 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/12 11:57:24 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,13 @@ void	check_args(char **argv)
 	}
 }
 
-t_philo	**init_philos(char *arg, pthread_mutex_t *mutex)
+t_philo	**init_philos(char *arg)
 {
 	t_philo	**philos;
 	int		count;
 	int		i;
+	pthread_mutex_t *mutex;
+	pthread_t *thread;
 	
 	count = ft_atoi_safe(arg);
 	philos = malloc(sizeof(t_philo *) * (count + 1));
@@ -52,7 +54,26 @@ t_philo	**init_philos(char *arg, pthread_mutex_t *mutex)
 			return (NULL);
 		}
 		philos[i]->name = i + 1;
+		mutex = malloc(sizeof(pthread_mutex_t)); //check malloc fail
+		pthread_mutex_init(mutex, NULL);
+		thread = malloc(sizeof(pthread_t)); //check malloc fail
 		philos[i]->mutex = mutex;
+		philos[i]->thread = thread;
+		i++;
+	}
+	i = 0;
+	while (i < count)
+	{
+		if (i == count - 1)
+		{
+			philos[i]->fork2 = &philos[0]->fork;
+			philos[i]->mutex2 = philos[0]->mutex;
+		}
+		else
+		{
+			philos[i]->fork2 = &philos[i + 1]->fork;
+			philos[i]->mutex2 = philos[i + 1]->mutex;
+		}
 		i++;
 	}
 	return (philos);
@@ -60,20 +81,21 @@ t_philo	**init_philos(char *arg, pthread_mutex_t *mutex)
 
 void	*routine(void	*arg)
 {
-	t_philo	**philos;
+	t_philo	*philos;
 	
 	philos = arg;
-	pthread_mutex_lock(philos[0]->mutex);
-	philos[1]->fork++;
-	printf("Eat fork: %d\n", philos[1]->fork);
-	sleep(1);
-	pthread_mutex_unlock(philos[0]->mutex);
-	philos[1]->fork++;
-	printf("sleep fork %d\n", philos[1]->fork);
-	sleep(1);
-	philos[1]->fork++;
-	printf("think fork: %d\n", philos[1]->fork);
-	sleep(1);
+	pthread_mutex_lock(philos->mutex);
+	pthread_mutex_lock(philos->mutex2);
+	philos->fork++;
+	printf("philo %d Eat fork: %d\n", philos->name, philos->fork);
+	sleep(2);
+	pthread_mutex_unlock(philos->mutex);
+	pthread_mutex_unlock(philos->mutex2);
+	philos->fork++;
+	printf("philo %d sleep fork %d\n", philos->name, philos->fork);
+	sleep(2);
+	philos->fork++;
+	printf("philo %d think fork: %d\n", philos->name, philos->fork);
 	return (NULL);
 }
 
@@ -81,29 +103,28 @@ int	main(int argc, char *argv[])
 {
 	int				i;
 	t_philo			**philos;
-	pthread_mutex_t	mutex;
-	pthread_t		th1;
-	pthread_t		th2;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Error: %s", WRONG_ARGUMENT_COUNT));
 	i = 1;
 	check_args(argv);
 	if (ft_get_or_set_errors(NULL))
-	return (printf(INVALID_ARGUMENT));
-	pthread_mutex_init(&mutex, NULL);
-	philos = init_philos(argv[1], &mutex);
+		return (printf(INVALID_ARGUMENT));
+	philos = init_philos(argv[1]);
 	if (!philos)
 		return (printf(MALLOC_FAIL));
 	i = 0;
 	while (philos[i])
 	{
-		printf("philo %d : %d\n", philos[i]->name, philos[i]->fork);
+		pthread_create(philos[i]->thread, NULL, &routine, philos[i]);
 		i++;
 	}
-	pthread_create(&th1, NULL, &routine, philos);
-	pthread_create(&th2, NULL, &routine, philos);
-	pthread_join(th1, NULL);
-	pthread_join(th2, NULL);
+	i = 0;
+	while (philos[i])
+	{
+		pthread_join(*philos[i]->thread, NULL);
+		free(philos[i]->thread);
+		i++;
+	}
 	return (0);
 }

@@ -7,7 +7,7 @@ OBJ = $(SRC:.c=.o)
 NAME = philo
 
 all : $(NAME) clean
-	./$(NAME) 2 110 211 111
+	./$(NAME) 6 110 211 111
 
 $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
