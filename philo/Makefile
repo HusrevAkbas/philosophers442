@@ -7,7 +7,7 @@ OBJ = $(SRC:.c=.o)
 NAME = philo
 
 all : $(NAME) clean
-	./$(NAME) 3 900 300 400 10
+	./$(NAME) 3 600 300 400 10 1>res
 
 $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
@@ -24,5 +24,8 @@ clean :
 f : fclean
 fclean : clean
 	rm -f $(NAME)
+
+val :
+	valgrind --leak-check=full --leak-check=full --show-leak-kinds=all ./$(NAME) 3 600 300 400
 
 .phony : OBJ clean c re fclean f all

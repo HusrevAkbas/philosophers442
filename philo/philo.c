@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/12 23:30:50 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/14 15:35:35 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,22 @@ t_philo	**init_philos(char **arg)
 	t_philo	**philos;
 	t_philo	arg_holder;
 	int		i;
+	int		*who_is_dead;
 	
-	arg_holder.name = ft_atoi_safe(arg[1]);
+	arg_holder.philo_count = ft_atoi_safe(arg[1]);
 	arg_holder.time_to_die = ft_atoi_safe(arg[2]);
 	arg_holder.time_to_eat = ft_atoi_safe(arg[3]);
 	arg_holder.time_to_sleep = ft_atoi_safe(arg[4]);
 	if (arg[5])
 		arg_holder.food_max  = ft_atoi_safe(arg[5]);
-	philos = malloc(sizeof(t_philo *) * (arg_holder.name + 1));
+	philos = malloc(sizeof(t_philo *) * (arg_holder.philo_count + 1));
 	if (!philos)
 		return (NULL);
-	memset(philos, 0, sizeof(t_philo *) * (arg_holder.name + 1));
+	memset(philos, 0, sizeof(t_philo *) * (arg_holder.philo_count + 1));
+	who_is_dead = malloc(sizeof(int));
+	*who_is_dead = 0;
 	i = 0;
-	while (i < arg_holder.name)
+	while (i < arg_holder.philo_count)
 	{
 		philos[i] = malloc(sizeof(t_philo));
 		if (!philos[i])
@@ -40,7 +43,9 @@ t_philo	**init_philos(char **arg)
 		if (i % 2 == 0)
 			philos[i]->hungry = 1;
 		philos[i]->name = i + 1;
+		philos[i]->philo_count = arg_holder.philo_count;
 		philos[i]->food_max = arg_holder.food_max;
+		philos[i]->who_is_dead = who_is_dead;
 		philos[i]->time_to_die =arg_holder.time_to_die;
 		philos[i]->time_to_eat =arg_holder.time_to_eat;
 		philos[i]->time_to_sleep =arg_holder.time_to_sleep;
@@ -52,12 +57,14 @@ t_philo	**init_philos(char **arg)
 		gettimeofday(&arg_holder.start_time, NULL); // check error
 		philos[i]->start_time.tv_sec = arg_holder.start_time.tv_sec;
 		philos[i]->start_time.tv_usec = arg_holder.start_time.tv_usec;
+		philos[i]->last_meal.tv_sec = arg_holder.start_time.tv_sec;
+		philos[i]->last_meal.tv_usec = arg_holder.start_time.tv_usec;
 		i++;
 	}
 	i = 0;
-	while (i < arg_holder.name)
+	while (i < arg_holder.philo_count)
 	{
-		if (i == arg_holder.name - 1)
+		if (i == arg_holder.philo_count - 1)
 		{
 			philos[i]->fork2 = &philos[0]->fork;
 			philos[i]->mute_fork2 = philos[0]->mute_fork;
@@ -72,32 +79,59 @@ t_philo	**init_philos(char **arg)
 	}
 	return (philos);
 }
-
-void	*routine(void	*arg)
+void	*am_i_dead(void	*arg)
 {
 	t_philo	*philo;
-	int		timestamp;
+	int		time_since_last_meal;
 
 	philo = arg;
 	while (1)
 	{
+		time_since_last_meal = ft_get_timestamp(philo->last_meal);
+		if (philo->last_meal.tv_sec && time_since_last_meal > philo->time_to_die)
+		{
+			*philo->who_is_dead = philo->name;
+			printf("%i %d is who is dead: %d am i dead\n", ft_get_timestamp(philo->last_meal), philo->name, *philo->who_is_dead);
+			return (NULL);
+		}
+	}
+	return (NULL);
+}
+void	*routine(void	*arg)
+{
+	pthread_t	th;
+	t_philo	*philo;
+	int		timestamp;
+
+	philo = arg;
+	th = pthread_create(&th, NULL, &am_i_dead, philo);
+	pthread_detach(th);
+	while (1)
+	{
+		printf("%i %d is who is dead: %d\n", ft_get_timestamp(philo->start_time), philo->name, *philo->who_is_dead);
 		if (philo->hungry)
 		{
-			pthread_mutex_lock(philo->mute_fork);
+			if (pthread_mutex_lock(philo->mute_fork) != 0)
+				printf("waiting\n");
 			pthread_mutex_lock(philo->mute_fork2);
 			timestamp = ft_get_timestamp(philo->start_time);
 			printf("%i %d has taken a fork\n", timestamp, philo->name);
+			philo->last_meal.tv_sec = 0;
 			printf("%i %d is eating\n", timestamp, philo->name);
 			usleep(philo->time_to_eat * 1000);
+			ft_update_last_meal(&philo->last_meal);
 			pthread_mutex_unlock(philo->mute_fork);
 			pthread_mutex_unlock(philo->mute_fork2);
 		}
+		printf("%i %d is who is dead: %d\n", ft_get_timestamp(philo->start_time), philo->name, *philo->who_is_dead);
 		timestamp = ft_get_timestamp(philo->start_time);
 		printf("%i %d is sleeping\n", timestamp, philo->name);
 		usleep(philo->time_to_sleep * 1000);
 		philo->hungry = 1;
+		printf("%i %d is who is dead: %d\n", ft_get_timestamp(philo->start_time), philo->name, *philo->who_is_dead);
 		timestamp = ft_get_timestamp(philo->start_time);
-		printf("%i %d is thinking \n", timestamp, philo->name);
+		printf("%i %d is thinking\n", timestamp, philo->name);
+		fflush(stdout); // WILL BE REMOVED
 		//check if anyone dies
 	}
 	return (NULL);

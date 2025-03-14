@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/12 23:24:16 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/14 14:47:03 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ typedef struct s_philo
 	int				fork;
 	int				*fork2;
 	int				hungry;
+	int				*who_is_dead;
+	int				philo_count;
 	int				food_counter;
 	int				food_max;
 	int				*food_max_reached;
@@ -68,5 +70,6 @@ int		ft_atoi_safe(char *num);
 char	*ft_get_or_set_errors(char *error);
 int		ft_get_timestamp(t_timeval tv);
 int		ft_isdigit(int c);
+int		ft_update_last_meal(t_timeval *tv);
 
 #endif //PHILO_H
