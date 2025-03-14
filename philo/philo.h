@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/14 14:47:03 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/14 23:04:33 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_philo
 	t_timeval		start_time;
 	pthread_t		*thread;
 	pthread_mutex_t	*mute_fork;
+	pthread_mutex_t	*mute_dead;
 	pthread_mutex_t	*mute_fork2;
 	//struct s_philo	*next;
 }	t_philo;
