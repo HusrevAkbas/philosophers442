@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/14 23:04:33 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/15 21:49:36 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_philo
 	int				food_counter;
 	int				food_max;
 	int				*food_max_reached;
-	//int				sleepy;
+	int				sleepy;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;

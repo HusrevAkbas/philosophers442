@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/14 23:06:04 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/15 21:54:08 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ t_philo	**init_philos(char **arg)
 			else
 				philos[i]->mute_fork2 = philos[0]->mute_fork;
 			philos[i]->hungry = 0;
+			philos[i]->sleepy = 1;
 		}
 		else
 		{
@@ -88,33 +89,34 @@ t_philo	**init_philos(char **arg)
 }
 void	*am_i_dead(void	*arg)
 {
-	t_philo	*philo;
+	t_philo	**philo;
 	int		time_since_last_meal;
+	int		i;
 
 	philo = arg;
 	while (1)
 	{
-		time_since_last_meal = ft_get_timestamp(philo->last_meal);
-		if (philo->last_meal.tv_sec && time_since_last_meal > philo->time_to_die)
+		i = 0;
+		while (philo[i])
 		{
-			pthread_mutex_lock(philo->mute_dead);
-			*philo->who_is_dead = philo->name;
-			printf("%5i %3d died\n", ft_get_timestamp(philo->start_time), philo->name);
-			return (NULL);
+			time_since_last_meal = ft_get_timestamp(philo[i]->last_meal);
+			if (philo[i]->last_meal.tv_sec && time_since_last_meal > philo[i]->time_to_die)
+			{
+				*philo[i]->who_is_dead = philo[i]->name;
+				printf("%5i %3d died\n", ft_get_timestamp(philo[i]->start_time), philo[i]->name);
+				return (NULL);
+			}
+			i++;
 		}
 	}
 	return (NULL);
 }
 void	*routine(void	*arg)
 {
-	pthread_t	th;
 	t_philo	*philo;
 	int		timestamp;
 
 	philo = arg;
-	th = pthread_create(&th, NULL, &am_i_dead, philo);
-	
-	pthread_detach(th);
 	while (1)
 	{
 		while (philo->hungry && !philo->mute_fork2)
@@ -147,7 +149,7 @@ void	*routine(void	*arg)
 			return (NULL);
 		timestamp = ft_get_timestamp(philo->start_time);
 		printf("%5i %3d is thinking\n", timestamp, philo->name);
-		if (philo->time_to_die - philo->time_to_sleep - 5 > 0)
+		if (!philo->sleepy && philo->time_to_die - philo->time_to_sleep - 5 > 0)
 			usleep((philo->time_to_die - philo->time_to_sleep - 5) * 1000);
 		fflush(stdout); // WILL BE REMOVED
 		//check if anyone dies
@@ -157,8 +159,9 @@ void	*routine(void	*arg)
 
 int	main(int argc, char *argv[])
 {
-	int				i;
-	t_philo			**philos;
+	int			i;
+	t_philo		**philos;
+	pthread_t	dead_check;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Error: %s", WRONG_ARGUMENT_COUNT));
@@ -175,6 +178,8 @@ int	main(int argc, char *argv[])
 		pthread_create(philos[i]->thread, NULL, &routine, philos[i]);
 		i++;
 	}
+	pthread_create(&dead_check, NULL, &am_i_dead, philos);
+	
 	i = 0;
 	while (philos[i])
 	{
