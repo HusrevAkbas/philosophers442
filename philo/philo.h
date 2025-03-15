@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/15 21:49:36 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/15 22:31:36 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,38 +37,36 @@ typedef struct s_philo
 	int				fork;
 	int				*fork2;
 	int				hungry;
+	int				sleepy;
+	struct s_data	*data;
+	t_timeval		last_meal;
+	t_timeval		start_time;
+	pthread_t		*thread;
+	pthread_mutex_t	*mute_fork;
+	pthread_mutex_t	*mute_fork2;
+}	t_philo;
+
+typedef struct s_data
+{
 	int				*who_is_dead;
 	int				philo_count;
 	int				food_counter;
 	int				food_max;
 	int				*food_max_reached;
-	int				sleepy;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	// time of start or last meal
-	t_timeval		last_meal;
 	t_timeval		start_time;
 	pthread_t		*thread;
-	pthread_mutex_t	*mute_fork;
-	pthread_mutex_t	*mute_dead;
-	pthread_mutex_t	*mute_fork2;
-	//struct s_philo	*next;
-}	t_philo;
-
-typedef struct s_queue
-{
-	int				philo_index;
-	struct s_queue	*next;
-}	t_queue;
-
+	pthread_mutex_t	*muter;
+}	t_data;
 
 //Use NULL as argument to get errors. 
 //Use a text as argument to add an error.
 //Returns NULL when setting errors or if there is no error
+char	*ft_get_or_set_errors(char *error);
 void	ft_check_args(char **argv);
 int		ft_atoi_safe(char *num);
-char	*ft_get_or_set_errors(char *error);
 int		ft_get_timestamp(t_timeval tv);
 int		ft_isdigit(int c);
 int		ft_update_last_meal(t_timeval *tv);
