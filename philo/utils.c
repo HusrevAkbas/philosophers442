@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/14 14:36:24 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/16 13:20:37 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	ft_get_timestamp(t_timeval tv)
 	}
 	return (((now.tv_sec - tv.tv_sec) * 1000000 - tv.tv_usec + now.tv_usec) / 1000);
 }
-int	ft_update_last_meal(t_timeval *tv)
+int	ft_update_tv(t_timeval *tv)
 {
 	t_timeval	now;
 

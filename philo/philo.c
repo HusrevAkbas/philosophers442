@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/15 22:54:30 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/16 13:32:59 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,8 @@ t_philo	**init_philos(char **arg)
 		philos[i]->mute_fork = data->muter;
 		data->thread = malloc(sizeof(pthread_t)); //check malloc fail
 		philos[i]->thread = data->thread;
-		gettimeofday(&data->start_time, NULL); // check error
-		philos[i]->start_time.tv_sec = data->start_time.tv_sec;
-		philos[i]->start_time.tv_usec = data->start_time.tv_usec;
-		philos[i]->last_meal.tv_sec = data->start_time.tv_sec;
-		philos[i]->last_meal.tv_usec = data->start_time.tv_usec;
 		philos[i]->data = data;
+		ft_update_tv(&data->start_time);
 		data->muter = NULL;
 		data->thread = NULL;
 		i++;
@@ -99,7 +95,7 @@ void	*am_i_dead(void	*arg)
 			if (time_since_last_meal > philo[i]->data->time_to_die)
 			{
 				*philo[i]->data->who_is_dead = philo[i]->name;
-				printf("%5i %3d died\n", ft_get_timestamp(philo[i]->start_time), philo[i]->name);
+				printf("%5i %3d died\n", ft_get_timestamp(philo[i]->data->start_time), philo[i]->name);
 				return (NULL);
 			}
 			i++;
@@ -113,15 +109,13 @@ void	*routine(void	*arg)
 	int		timestamp;
 
 	philo = arg;
-	ft_update_last_meal(&philo->start_time);
-	philo->last_meal.tv_sec =  philo->data->start_time.tv_sec;
-	philo->last_meal.tv_usec = philo->data->start_time.tv_usec;
+	ft_update_tv(&philo->last_meal);
 	while (1)
 	{
 		while (philo->hungry && !philo->mute_fork2)
 		{
 			if (*philo->data->who_is_dead)
-			return (NULL);
+				return (NULL);
 		}
 		if (philo->hungry)
 		{
@@ -131,23 +125,23 @@ void	*routine(void	*arg)
 			pthread_mutex_lock(philo->mute_fork2);
 			if (*philo->data->who_is_dead)
 				return (NULL);
-			timestamp = ft_get_timestamp(philo->start_time);
+			timestamp = ft_get_timestamp(philo->data->start_time);
 			printf("%5i %3d has taken a fork\n", timestamp, philo->name);
 			printf("%5i %3d is eating\n", timestamp, philo->name);
-			ft_update_last_meal(&philo->last_meal);
+			ft_update_tv(&philo->last_meal);
 			usleep(philo->data->time_to_eat * 1000);
 			pthread_mutex_unlock(philo->mute_fork);
 			pthread_mutex_unlock(philo->mute_fork2);
 		}
 		if (*philo->data->who_is_dead)
 			return (NULL);
-		timestamp = ft_get_timestamp(philo->start_time);
+		timestamp = ft_get_timestamp(philo->data->start_time);
 		printf("%5i %3d is sleeping\n", timestamp, philo->name);
 		usleep(philo->data->time_to_sleep * 1000);
 		philo->hungry = 1;
 		if (*philo->data->who_is_dead)
 			return (NULL);
-		timestamp = ft_get_timestamp(philo->start_time);
+		timestamp = ft_get_timestamp(philo->data->start_time);
 		printf("%5i %3d is thinking\n", timestamp, philo->name);
 		// if (!philo->sleepy && philo->data->time_to_die - philo->data->time_to_eat - philo->data->time_to_sleep - 30 > 0)
 		// 	usleep((philo->data->time_to_die - philo->data->time_to_eat - philo->data->time_to_sleep - 30) * 1000);
@@ -161,7 +155,7 @@ int	main(int argc, char *argv[])
 {
 	int			i;
 	t_philo		**philos;
-	pthread_t	dead_check;
+	//pthread_t	dead_check;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Error: %s", WRONG_ARGUMENT_COUNT));
@@ -178,8 +172,10 @@ int	main(int argc, char *argv[])
 		pthread_create(philos[i]->thread, NULL, &routine, philos[i]);
 		i++;
 	}
-	pthread_create(&dead_check, NULL, &am_i_dead, philos);
-	pthread_join(dead_check, NULL);
+	while (*philos[0]->data->who_is_dead == 0)
+	{
+		am_i_dead(philos);
+	}
 	i = 0;
 	while (philos[i])
 	{

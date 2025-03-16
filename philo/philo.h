@@ -6,7 +6,7 @@
 /*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/15 22:31:36 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/16 13:20:37 by husrevakbas      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ typedef struct s_philo
 	int				sleepy;
 	struct s_data	*data;
 	t_timeval		last_meal;
-	t_timeval		start_time;
 	pthread_t		*thread;
 	pthread_mutex_t	*mute_fork;
 	pthread_mutex_t	*mute_fork2;
@@ -69,6 +68,6 @@ void	ft_check_args(char **argv);
 int		ft_atoi_safe(char *num);
 int		ft_get_timestamp(t_timeval tv);
 int		ft_isdigit(int c);
-int		ft_update_last_meal(t_timeval *tv);
+int		ft_update_tv(t_timeval *tv);
 
 #endif //PHILO_H
