@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
+/*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/16 13:20:37 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/03/24 12:40:48 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_philo
 	int				*fork2;
 	int				hungry;
 	int				sleepy;
+	int				food_counter;
 	struct s_data	*data;
 	t_timeval		last_meal;
 	pthread_t		*thread;
@@ -49,7 +50,6 @@ typedef struct s_data
 {
 	int				*who_is_dead;
 	int				philo_count;
-	int				food_counter;
 	int				food_max;
 	int				*food_max_reached;
 	int				time_to_die;
