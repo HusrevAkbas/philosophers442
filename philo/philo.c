@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/28 12:26:17 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/03/28 14:52:43 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,15 @@ void	*routine(void	*arg)
 	return (NULL);
 }
 
+void	delete_data(t_data *data)
+{
+	free(data->food_max_reached);
+	free(data->who_is_dead);
+	pthread_mutex_destroy(data->muter);
+	free(data->muter);
+	free(data);
+}
+
 int	main(int argc, char *argv[])
 {
 	int			i;
@@ -187,10 +196,17 @@ int	main(int argc, char *argv[])
 		am_i_dead(philos);
 	}
 	i = 0;
+	t_data	*data = philos[0]->data;
 	while (philos[i])
 	{
 		pthread_join(*philos[i]->thread, NULL);
+		pthread_mutex_destroy(philos[i]->mute_fork);
+		free(philos[i]->mute_fork);
+		free(philos[i]->thread);
+		free(philos[i]);
 		i++;
 	}
+	delete_data(data);
+	free(philos);
 	return (0);
 }

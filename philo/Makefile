@@ -26,6 +26,6 @@ fclean : clean
 	rm -f $(NAME)
 
 val :
-	valgrind --leak-check=full --leak-check=full --show-leak-kinds=all ./$(NAME) 2 600 300 400
+	valgrind --leak-check=full --leak-check=full --show-leak-kinds=all ./$(NAME) 2 21 10 10 3
 
 .phony : OBJ clean c re fclean f all val
