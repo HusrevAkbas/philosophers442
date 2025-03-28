@@ -7,8 +7,8 @@ OBJ = $(SRC:.c=.o)
 NAME = philo
 
 all : $(NAME) clean
-	./$(NAME) 140 806 400 400
-
+	./$(NAME) 100 606 300 100 10
+# check the issue when max food is 1 solved with additional mutex for shared pointer
 $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
 

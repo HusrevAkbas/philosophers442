@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/24 12:52:17 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/03/28 12:26:17 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,6 @@ t_philo	**init_philos(char **arg)
 	if (!philos)
 		return (NULL);
 	memset(philos, 0, sizeof(t_philo *) * (data->philo_count + 1));
-	who_is_dead = malloc(sizeof(int)); // check fail
-	*who_is_dead = 0;
-	data->who_is_dead = who_is_dead;
-	who_is_dead = malloc(sizeof(int)); // check fail
-	*who_is_dead = 0;
-	data->food_max_reached = who_is_dead;
 	i = 0;
 	while (i < data->philo_count)
 	{
@@ -48,7 +42,7 @@ t_philo	**init_philos(char **arg)
 		}
 		memset(philos[i], 0, sizeof(t_philo));
 		if (i % 2 == 0)
-			philos[i]->hungry = 1;
+		philos[i]->hungry = 1;
 		philos[i]->name = i + 1;
 		data->muter = malloc(sizeof(pthread_mutex_t)); //check malloc fail
 		pthread_mutex_init(data->muter, NULL);
@@ -66,22 +60,28 @@ t_philo	**init_philos(char **arg)
 	{
 		if (i == data->philo_count - 1)
 		{
-			philos[i]->fork2 = &philos[0]->fork;
 			if (i == 0)
-				philos[i]->mute_fork2 = NULL;
+			philos[i]->mute_fork2 = NULL;
 			else
-				philos[i]->mute_fork2 = philos[0]->mute_fork;
+			philos[i]->mute_fork2 = philos[0]->mute_fork;
 			philos[i]->hungry = 0;
-			if (i % 2 == 1)
-				philos[i]->sleepy = 1;
+			// if (i % 2 == 1)
+			// 	philos[i]->sleepy = 1;
 		}
 		else
 		{
-			philos[i]->fork2 = &philos[i + 1]->fork;
 			philos[i]->mute_fork2 = philos[i + 1]->mute_fork;
 		}
 		i++;
 	}
+	who_is_dead = malloc(sizeof(int)); // check fail
+	*who_is_dead = 0;
+	data->who_is_dead = who_is_dead;
+	who_is_dead = malloc(sizeof(int)); // check fail
+	*who_is_dead = 0;
+	data->food_max_reached = who_is_dead;
+	data->muter = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(data->muter, NULL);
 	return (philos);
 }
 void	*am_i_dead(void	*arg)
@@ -126,15 +126,23 @@ void	*routine(void	*arg)
 			pthread_mutex_lock(philo->mute_fork);
 			pthread_mutex_lock(philo->mute_fork2);
 			if (*philo->data->who_is_dead || philo->data->philo_count == *philo->data->food_max_reached)
+			{
+				pthread_mutex_unlock(philo->mute_fork);
+				pthread_mutex_unlock(philo->mute_fork2);
 				return (NULL);
+			}
+			philo->food_counter++;
+			if (philo->food_counter == philo->data->food_max)
+			{
+				pthread_mutex_lock(philo->data->muter);
+				*philo->data->food_max_reached += 1;
+				pthread_mutex_unlock(philo->data->muter);
+			}
 			timestamp = ft_get_timestamp(philo->data->start_time);
 			printf("%5i %3d has taken a fork\n", timestamp, philo->name);
 			printf("%5i %3d is eating(%d)\n", timestamp, philo->name, philo->food_counter);
-			usleep(philo->data->time_to_eat * 1000);
-			philo->food_counter++;
-			if (philo->food_counter == philo->data->food_max)
-				*philo->data->food_max_reached += 1;
 			ft_update_tv(&philo->last_meal);
+			usleep(philo->data->time_to_eat * 1000);
 			pthread_mutex_unlock(philo->mute_fork);
 			pthread_mutex_unlock(philo->mute_fork2);
 		}
@@ -157,7 +165,6 @@ int	main(int argc, char *argv[])
 {
 	int			i;
 	t_philo		**philos;
-	//pthread_t	dead_check;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Error: %s", WRONG_ARGUMENT_COUNT));

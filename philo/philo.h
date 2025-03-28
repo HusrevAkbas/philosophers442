@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/24 12:40:48 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/03/28 12:19:39 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,7 @@
 typedef struct s_philo
 {
 	int				name;
-	int				fork;
-	int				*fork2;
 	int				hungry;
-	int				sleepy;
 	int				food_counter;
 	struct s_data	*data;
 	t_timeval		last_meal;
