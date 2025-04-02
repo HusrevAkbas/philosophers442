@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   argument_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: husrevakbas <husrevakbas@student.42.fr>    +#+  +:+       +#+        */
+/*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/12 22:58:14 by husrevakbas      ###   ########.fr       */
+/*   Updated: 2025/04/02 14:43:00 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ int	ft_atoi_safe(char *num)
 	}
 	return (check_overflow(is_n * a));
 }
+
 void	ft_check_args(char **argv)
 {
 	int	i;

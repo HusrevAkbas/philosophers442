@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 14:20:11 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/02 14:43:18 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ long long	ft_now(void)
 {
 	t_timeval	now;
 
-	if ( gettimeofday(&now, NULL) == -1)
+	if (gettimeofday(&now, NULL) == -1)
 	{
 		ft_get_or_set_errors("Can not get current time value\n");
 		return (0);

@@ -6,11 +6,23 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 14:23:25 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/02 15:20:11 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	set_args(t_data *data, char **args)
+{
+	data->philo_count = ft_atoi_safe(args[1]);
+	data->time_to_die = ft_atoi_safe(args[2]);
+	data->time_to_eat = ft_atoi_safe(args[3]);
+	data->time_to_sleep = ft_atoi_safe(args[4]);
+	if (args[5])
+		data->food_max = ft_atoi_safe(args[5]);
+	else
+		data->food_max = 0;
+}
 
 t_data	*init_data(char **args)
 {
@@ -18,15 +30,9 @@ t_data	*init_data(char **args)
 
 	data = malloc(sizeof(t_data));
 	if (!data)
-		return ((t_data *) ft_get_or_set_errors("Malloc failed in init_data function (1)"));
-	data->philo_count = ft_atoi_safe(args[1]);
-	data->time_to_die = ft_atoi_safe(args[2]);
-	data->time_to_eat = ft_atoi_safe(args[3]);
-	data->time_to_sleep = ft_atoi_safe(args[4]);
-	if (args[5])
-		data->food_max  = ft_atoi_safe(args[5]);
-	else
-		data->food_max = 0;
+		return ((t_data *) ft_get_or_set_errors(
+				"Malloc failed in init_data function (1)"));
+	set_args(data, args);
 	data->start_time = ft_now();
 	data->who_is_dead = malloc(sizeof(int));
 	if (!data->who_is_dead)
@@ -48,13 +54,13 @@ void	go_bath(t_philo **philos, t_data *data)
 
 	if (data)
 	{
-		free (data->food_max_reached);
-		free (data->who_is_dead);
-		free (data);
+		free(data->food_max_reached);
+		free(data->who_is_dead);
+		free(data);
 		data = NULL;
 	}
 	if (!philos)
-	return ;
+		return ;
 	i = 0;
 	while (philos[i])
 	{
@@ -64,18 +70,10 @@ void	go_bath(t_philo **philos, t_data *data)
 	free (philos);
 }
 
-t_philo	**init_philos(t_data *data)
+t_philo	**create_philos(t_philo **philos, t_data *data)
 {
-	t_philo	**philos;
-	int		i;
+	int	i;
 
-	philos = malloc(sizeof(t_philo *) * (data->philo_count + 1));
-	if (!philos)
-	{
-		ft_get_or_set_errors("Malloc failed in init_philo function (1)");
-		return (NULL);
-	}
-	memset(philos, 0, sizeof(t_philo *) * (data->philo_count + 1));
 	i = 0;
 	while (i < data->philo_count)
 	{
@@ -94,25 +92,46 @@ t_philo	**init_philos(t_data *data)
 		philos[i]->data = data;
 		i++;
 	}
+	return (philos);
+}
+
+void	set_second_forks(t_philo **philos, t_data *data)
+{
+	int	i;
+
 	i = 0;
 	while (i < data->philo_count)
 	{
 		if (i == data->philo_count - 1)
 		{
-			if (i == 0)
-			philos[i]->mute_fork2 = NULL;
+			if (data->philo_count == 1)
+				philos[i]->mute_fork2 = NULL;
 			else
-			philos[i]->mute_fork2 = &philos[0]->mute_fork;
+				philos[i]->mute_fork2 = &philos[0]->mute_fork;
 			philos[i]->hungry = 0;
 		}
 		else
-		{
 			philos[i]->mute_fork2 = &philos[i + 1]->mute_fork;
-		}
 		i++;
 	}
+}
+
+t_philo	**init_philos(t_data *data)
+{
+	t_philo	**philos;
+
+	philos = malloc(sizeof(t_philo *) * (data->philo_count + 1));
+	if (!philos)
+	{
+		ft_get_or_set_errors("Malloc failed in init_philo function (1)");
+		return (NULL);
+	}
+	memset(philos, 0, sizeof(t_philo *) * (data->philo_count + 1));
+	philos = create_philos(philos, data);
+	set_second_forks(philos, data);
 	return (philos);
 }
+
 void	*am_i_dead(void	*arg)
 {
 	t_philo	**philo;
@@ -126,8 +145,11 @@ void	*am_i_dead(void	*arg)
 		time_since_last_meal = ft_get_timestamp(philo[i]->last_meal);
 		if (time_since_last_meal > philo[i]->data->time_to_die)
 		{
+			pthread_mutex_lock(&philo[i]->data->muter);
 			*philo[i]->data->who_is_dead = philo[i]->name;
-			printf("%5i %3d died\n", ft_get_timestamp(philo[i]->data->start_time), philo[i]->name);
+			pthread_mutex_unlock(&philo[i]->data->muter);
+			printf("%5i %3d died\n", ft_get_timestamp(philo[i]->data->start_time),
+				philo[i]->name);
 			return (NULL);
 		}
 		i++;
@@ -145,16 +167,19 @@ void	*routine(void	*arg)
 	{
 		while (philo->hungry && !philo->mute_fork2)
 		{
-			if (*philo->data->who_is_dead || philo->data->philo_count == *philo->data->food_max_reached)
+			if (*philo->data->who_is_dead || philo->data->philo_count
+					== *philo->data->food_max_reached)
 				return (NULL);
 		}
 		if (philo->hungry)
 		{
-			if (*philo->data->who_is_dead || philo->data->philo_count == *philo->data->food_max_reached)
+			if (*philo->data->who_is_dead || philo->data->philo_count
+					== *philo->data->food_max_reached)
 				return (NULL);
 			pthread_mutex_lock(&philo->mute_fork);
 			pthread_mutex_lock(philo->mute_fork2);
-			if (*philo->data->who_is_dead || philo->data->philo_count == *philo->data->food_max_reached)
+			if (*philo->data->who_is_dead || philo->data->philo_count
+					== *philo->data->food_max_reached)
 			{
 				pthread_mutex_unlock(&philo->mute_fork);
 				pthread_mutex_unlock(philo->mute_fork2);
@@ -169,23 +194,25 @@ void	*routine(void	*arg)
 			}
 			timestamp = ft_get_timestamp(philo->data->start_time);
 			printf("%5i %3d has taken a fork\n", timestamp, philo->name);
-			printf("%5i %3d is eating(%d)\n", timestamp, philo->name, philo->food_counter);
+			printf("%5i %3d is eating(%d)\n",
+					timestamp, philo->name, philo->food_counter);
 			philo->last_meal = ft_now();
 			usleep(philo->data->time_to_eat * 1000);
 			pthread_mutex_unlock(&philo->mute_fork);
 			pthread_mutex_unlock(philo->mute_fork2);
 		}
-		if (*philo->data->who_is_dead || philo->data->philo_count == *philo->data->food_max_reached)
+		if (*philo->data->who_is_dead || philo->data->philo_count
+				== *philo->data->food_max_reached)
 			return (NULL);
 		timestamp = ft_get_timestamp(philo->data->start_time);
 		printf("%5i %3d is sleeping\n", timestamp, philo->name);
 		usleep(philo->data->time_to_sleep * 1000);
 		philo->hungry = 1;
-		if (*philo->data->who_is_dead || philo->data->philo_count == *philo->data->food_max_reached)
+		if (*philo->data->who_is_dead || philo->data->philo_count
+				== *philo->data->food_max_reached)
 			return (NULL);
 		timestamp = ft_get_timestamp(philo->data->start_time);
 		printf("%5i %3d is thinking\n", timestamp, philo->name);
-		fflush(stdout); // WILL BE REMOVED
 	}
 	return (NULL);
 }

@@ -7,7 +7,7 @@ OBJ = $(SRC:.c=.o)
 NAME = philo
 
 all : $(NAME) clean
-	./$(NAME) 3 606 300 100 10
+	./$(NAME) 11 606 300 200 10
 # check the issue when max food is 1 solved with additional mutex for shared pointer
 $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
@@ -26,6 +26,6 @@ fclean : clean
 	rm -f $(NAME)
 
 val :
-	valgrind --leak-check=full --leak-check=full --show-leak-kinds=all ./$(NAME) 2 21 10 10 3
+	valgrind --tool=helgrind ./$(NAME) 2 30 10 10 3
 
 .phony : OBJ clean c re fclean f all val
