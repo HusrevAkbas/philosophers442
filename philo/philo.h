@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/03/28 12:19:39 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/02 14:20:24 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ typedef struct s_philo
 	int				hungry;
 	int				food_counter;
 	struct s_data	*data;
-	t_timeval		last_meal;
-	pthread_t		*thread;
-	pthread_mutex_t	*mute_fork;
+	long long		last_meal;
+	pthread_t		thread;
+	pthread_mutex_t	mute_fork;
 	pthread_mutex_t	*mute_fork2;
 }	t_philo;
 
@@ -52,9 +52,8 @@ typedef struct s_data
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	t_timeval		start_time;
-	pthread_t		*thread;
-	pthread_mutex_t	*muter;
+	long long		start_time;
+	pthread_mutex_t	muter;
 }	t_data;
 
 //Use NULL as argument to get errors. 
@@ -63,8 +62,11 @@ typedef struct s_data
 char	*ft_get_or_set_errors(char *error);
 void	ft_check_args(char **argv);
 int		ft_atoi_safe(char *num);
-int		ft_get_timestamp(t_timeval tv);
+int		ft_get_timestamp(long long old);
 int		ft_isdigit(int c);
-int		ft_update_tv(t_timeval *tv);
+long long	ft_now(void);
+// always use with a message
+//otherwise it may return a pointer
+void	*ft_free_many(void *one, void *two, void *three, char *message);
 
 #endif //PHILO_H
