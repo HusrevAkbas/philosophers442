@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 15:20:11 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/17 15:29:12 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,6 @@ void	*routine(void	*arg)
 	int		timestamp;
 
 	philo = arg;
-	philo->last_meal = ft_now();
 	while (1)
 	{
 		while (philo->hungry && !philo->mute_fork2)
@@ -227,9 +226,9 @@ void	delete_data(t_data *data)
 
 int	main(int argc, char *argv[])
 {
-	int			i;
 	t_philo		**philos;
 	t_data		*data;
+	int			i;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Error: %s", WRONG_ARGUMENT_COUNT));
@@ -246,20 +245,16 @@ int	main(int argc, char *argv[])
 	i = 0;
 	while (philos[i])
 	{
+		philos[i]->last_meal = ft_now();
 		pthread_create(&philos[i]->thread, NULL, &routine, philos[i]);
 		i++;
 	}
 	while (*philos[0]->data->who_is_dead == 0
 		&& *philos[0]->data->food_max_reached < philos[0]->data->philo_count)
-	{
 		am_i_dead(philos);
-	}
 	i = 0;
 	while (philos[i])
-	{
-		pthread_join(philos[i]->thread, NULL);
-		i++;
-	}
+		pthread_join(philos[i++]->thread, NULL);
 	go_bath(philos, data);
 	return (0);
 }
