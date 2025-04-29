@@ -26,6 +26,6 @@ fclean : clean
 	rm -f $(NAME)
 
 val :
-	valgrind --tool=helgrind ./$(NAME) 2 30 10 10 3
+	valgrind --tool=helgrind ./$(NAME) 2 300 100 100 3
 
 .phony : OBJ clean c re fclean f all val

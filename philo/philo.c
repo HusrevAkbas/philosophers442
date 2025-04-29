@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/29 15:45:57 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/29 16:45:27 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,15 +198,12 @@ int	take_forks(t_philo *philo)
 
 int	eat(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->muter);
 	if (is_somone_dead_or_food_max_reached(philo->data))
 	{
 		pthread_mutex_unlock(&philo->mute_fork);
 		pthread_mutex_unlock(philo->mute_fork2);
-		pthread_mutex_unlock(&philo->data->muter);
 		return (1);
 	}
-	pthread_mutex_unlock(&philo->data->muter);
 	philo->food_counter++;
 	pthread_mutex_lock(&philo->data->muter);
 	if (philo->food_counter == philo->data->food_max)
