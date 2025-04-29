@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 14:20:24 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/29 15:31:16 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ typedef struct s_philo
 	int				name;
 	int				hungry;
 	int				food_counter;
+	int				timestamp;
+	int				sleeptime;
 	struct s_data	*data;
 	long long		last_meal;
 	pthread_t		thread;

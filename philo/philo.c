@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/17 15:29:12 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/29 15:45:57 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,75 +143,114 @@ void	*am_i_dead(void	*arg)
 	while (philo[i])
 	{
 		time_since_last_meal = ft_get_timestamp(philo[i]->last_meal);
+		pthread_mutex_lock(&philo[i]->data->muter);
 		if (time_since_last_meal > philo[i]->data->time_to_die)
 		{
-			pthread_mutex_lock(&philo[i]->data->muter);
 			*philo[i]->data->who_is_dead = philo[i]->name;
-			pthread_mutex_unlock(&philo[i]->data->muter);
 			printf("%5i %3d died\n", ft_get_timestamp(philo[i]->data->start_time),
 				philo[i]->name);
+			pthread_mutex_unlock(&philo[i]->data->muter);
 			return (NULL);
 		}
+		pthread_mutex_unlock(&philo[i]->data->muter);
 		i++;
 	}
 	return (NULL);
 }
+
+int	is_somone_dead_or_food_max_reached(t_data *data)
+{
+	pthread_mutex_lock(&data->muter);
+	if (*data->who_is_dead || data->philo_count	== *data->food_max_reached)
+	{
+		pthread_mutex_unlock(&data->muter);
+		return (1);
+	}
+	pthread_mutex_unlock(&data->muter);
+	return (0);
+}
+
+int	take_forks(t_philo *philo)
+{
+	int	timestamp;
+
+	pthread_mutex_lock(&philo->mute_fork);
+	pthread_mutex_lock(&philo->data->muter);
+	timestamp = ft_get_timestamp(philo->data->start_time);
+	printf("%5i %3d has taken a fork 1\n", timestamp, philo->name);
+	pthread_mutex_unlock(&philo->data->muter);
+	if (philo->mute_fork2)
+	{
+		pthread_mutex_lock(&philo->data->muter);
+		timestamp = ft_get_timestamp(philo->data->start_time);
+		printf("%5i %3d has taken a fork 2\n", timestamp, philo->name);
+		pthread_mutex_unlock(&philo->data->muter);
+		pthread_mutex_lock(philo->mute_fork2);
+	}
+	else
+	{
+		while (!is_somone_dead_or_food_max_reached(philo->data));
+		pthread_mutex_unlock(&philo->mute_fork);
+		return (1);
+	}
+	return (0);
+}
+
+int	eat(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->muter);
+	if (is_somone_dead_or_food_max_reached(philo->data))
+	{
+		pthread_mutex_unlock(&philo->mute_fork);
+		pthread_mutex_unlock(philo->mute_fork2);
+		pthread_mutex_unlock(&philo->data->muter);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->data->muter);
+	philo->food_counter++;
+	pthread_mutex_lock(&philo->data->muter);
+	if (philo->food_counter == philo->data->food_max)
+		*philo->data->food_max_reached += 1;
+	philo->sleeptime = philo->data->time_to_eat * 1000;
+	philo->timestamp = ft_get_timestamp(philo->data->start_time);
+	pthread_mutex_unlock(&philo->data->muter);
+	printf("%5i %3d is eating(%d)\n",
+		philo->timestamp, philo->name, philo->food_counter);
+	philo->last_meal = ft_now();
+	usleep(philo->sleeptime);
+	pthread_mutex_unlock(&philo->mute_fork);
+	pthread_mutex_unlock(philo->mute_fork2);
+	return (0);
+}
 void	*routine(void	*arg)
 {
 	t_philo	*philo;
-	int		timestamp;
 
 	philo = arg;
 	while (1)
 	{
-		while (philo->hungry && !philo->mute_fork2)
-		{
-			if (*philo->data->who_is_dead || philo->data->philo_count
-					== *philo->data->food_max_reached)
-				return (NULL);
-		}
 		if (philo->hungry)
 		{
-			if (*philo->data->who_is_dead || philo->data->philo_count
-					== *philo->data->food_max_reached)
+			if (take_forks(philo))
 				return (NULL);
-			pthread_mutex_lock(&philo->mute_fork);
-			pthread_mutex_lock(philo->mute_fork2);
-			if (*philo->data->who_is_dead || philo->data->philo_count
-					== *philo->data->food_max_reached)
-			{
-				pthread_mutex_unlock(&philo->mute_fork);
-				pthread_mutex_unlock(philo->mute_fork2);
+			if (eat(philo))
 				return (NULL);
-			}
-			philo->food_counter++;
-			if (philo->food_counter == philo->data->food_max)
-			{
-				pthread_mutex_lock(&philo->data->muter);
-				*philo->data->food_max_reached += 1;
-				pthread_mutex_unlock(&philo->data->muter);
-			}
-			timestamp = ft_get_timestamp(philo->data->start_time);
-			printf("%5i %3d has taken a fork\n", timestamp, philo->name);
-			printf("%5i %3d is eating(%d)\n",
-					timestamp, philo->name, philo->food_counter);
-			philo->last_meal = ft_now();
-			usleep(philo->data->time_to_eat * 1000);
-			pthread_mutex_unlock(&philo->mute_fork);
-			pthread_mutex_unlock(philo->mute_fork2);
 		}
-		if (*philo->data->who_is_dead || philo->data->philo_count
-				== *philo->data->food_max_reached)
+		if (is_somone_dead_or_food_max_reached(philo->data))
 			return (NULL);
-		timestamp = ft_get_timestamp(philo->data->start_time);
-		printf("%5i %3d is sleeping\n", timestamp, philo->name);
-		usleep(philo->data->time_to_sleep * 1000);
+		pthread_mutex_lock(&philo->data->muter);
+		philo->timestamp = ft_get_timestamp(philo->data->start_time);
+		philo->sleeptime = philo->data->time_to_sleep * 1000;
+		pthread_mutex_unlock(&philo->data->muter);
+		printf("%5i %3d is sleeping\n", philo->timestamp, philo->name);
+		usleep(philo->sleeptime);
 		philo->hungry = 1;
-		if (*philo->data->who_is_dead || philo->data->philo_count
-				== *philo->data->food_max_reached)
+		if (is_somone_dead_or_food_max_reached(philo->data))
 			return (NULL);
-		timestamp = ft_get_timestamp(philo->data->start_time);
-		printf("%5i %3d is thinking\n", timestamp, philo->name);
+		pthread_mutex_lock(&philo->data->muter);
+		philo->timestamp = ft_get_timestamp(philo->data->start_time);
+		pthread_mutex_unlock(&philo->data->muter);
+		printf("%5i %3d is thinking\n", philo->timestamp, philo->name);
 	}
 	return (NULL);
 }
@@ -249,8 +288,7 @@ int	main(int argc, char *argv[])
 		pthread_create(&philos[i]->thread, NULL, &routine, philos[i]);
 		i++;
 	}
-	while (*philos[0]->data->who_is_dead == 0
-		&& *philos[0]->data->food_max_reached < philos[0]->data->philo_count)
+	while (!is_somone_dead_or_food_max_reached(data))
 		am_i_dead(philos);
 	i = 0;
 	while (philos[i])
