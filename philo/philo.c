@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/29 16:45:27 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/29 17:30:05 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ void	go_bath(t_philo **philos, t_data *data)
 	i = 0;
 	while (philos[i])
 	{
+		pthread_mutex_destroy(&philos[i]->mute_fork);
+		pthread_mutex_destroy(&philos[i]->mute_philo);
 		free (philos[i]);
 		i++;
 	}
@@ -89,6 +91,7 @@ t_philo	**create_philos(t_philo **philos, t_data *data)
 			philos[i]->hungry = 1;
 		philos[i]->name = i + 1;
 		pthread_mutex_init(&philos[i]->mute_fork, NULL);
+		pthread_mutex_init(&philos[i]->mute_philo, NULL);
 		philos[i]->data = data;
 		i++;
 	}
@@ -142,6 +145,7 @@ void	*am_i_dead(void	*arg)
 	i = 0;
 	while (philo[i])
 	{
+		pthread_mutex_lock(&philo[i]->mute_philo);
 		time_since_last_meal = ft_get_timestamp(philo[i]->last_meal);
 		pthread_mutex_lock(&philo[i]->data->muter);
 		if (time_since_last_meal > philo[i]->data->time_to_die)
@@ -150,9 +154,11 @@ void	*am_i_dead(void	*arg)
 			printf("%5i %3d died\n", ft_get_timestamp(philo[i]->data->start_time),
 				philo[i]->name);
 			pthread_mutex_unlock(&philo[i]->data->muter);
+			pthread_mutex_unlock(&philo[i]->mute_philo);
 			return (NULL);
 		}
 		pthread_mutex_unlock(&philo[i]->data->muter);
+		pthread_mutex_unlock(&philo[i]->mute_philo);
 		i++;
 	}
 	return (NULL);
@@ -178,10 +184,8 @@ int	take_forks(t_philo *philo)
 	pthread_mutex_lock(&philo->data->muter);
 	timestamp = ft_get_timestamp(philo->data->start_time);
 	printf("%5i %3d has taken a fork 1\n", timestamp, philo->name);
-	pthread_mutex_unlock(&philo->data->muter);
 	if (philo->mute_fork2)
 	{
-		pthread_mutex_lock(&philo->data->muter);
 		timestamp = ft_get_timestamp(philo->data->start_time);
 		printf("%5i %3d has taken a fork 2\n", timestamp, philo->name);
 		pthread_mutex_unlock(&philo->data->muter);
@@ -189,8 +193,10 @@ int	take_forks(t_philo *philo)
 	}
 	else
 	{
-		while (!is_somone_dead_or_food_max_reached(philo->data));
+		pthread_mutex_unlock(&philo->data->muter);
 		pthread_mutex_unlock(&philo->mute_fork);
+		pthread_mutex_unlock(&philo->mute_philo);
+		while (!is_somone_dead_or_food_max_reached(philo->data));
 		return (1);
 	}
 	return (0);
@@ -198,13 +204,14 @@ int	take_forks(t_philo *philo)
 
 int	eat(t_philo *philo)
 {
+	philo->food_counter++;
 	if (is_somone_dead_or_food_max_reached(philo->data))
 	{
 		pthread_mutex_unlock(&philo->mute_fork);
 		pthread_mutex_unlock(philo->mute_fork2);
+		pthread_mutex_unlock(&philo->mute_philo);
 		return (1);
 	}
-	philo->food_counter++;
 	pthread_mutex_lock(&philo->data->muter);
 	if (philo->food_counter == philo->data->food_max)
 		*philo->data->food_max_reached += 1;
@@ -226,6 +233,7 @@ void	*routine(void	*arg)
 	philo = arg;
 	while (1)
 	{
+		pthread_mutex_lock(&philo->mute_philo);
 		if (philo->hungry)
 		{
 			if (take_forks(philo))
@@ -248,6 +256,7 @@ void	*routine(void	*arg)
 		philo->timestamp = ft_get_timestamp(philo->data->start_time);
 		pthread_mutex_unlock(&philo->data->muter);
 		printf("%5i %3d is thinking\n", philo->timestamp, philo->name);
+		pthread_mutex_unlock(&philo->mute_philo);
 	}
 	return (NULL);
 }

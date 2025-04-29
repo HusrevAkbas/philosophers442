@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/29 15:31:16 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/29 17:06:49 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_philo
 	pthread_t		thread;
 	pthread_mutex_t	mute_fork;
 	pthread_mutex_t	*mute_fork2;
+	pthread_mutex_t	mute_philo;
 }	t_philo;
 
 typedef struct s_data
