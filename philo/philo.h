@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/29 17:06:49 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/30 14:24:14 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,12 @@ typedef struct s_philo
 	int				hungry;
 	int				food_counter;
 	int				timestamp;
-	int				sleeptime;
 	struct s_data	*data;
 	long long		last_meal;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	long long		start_time;
 	pthread_t		thread;
 	pthread_mutex_t	mute_fork;
 	pthread_mutex_t	*mute_fork2;
@@ -56,7 +59,8 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	long long		start_time;
-	pthread_mutex_t	muter;
+	pthread_mutex_t	mute_data;
+	pthread_mutex_t	mute_print;
 }	t_data;
 
 //Use NULL as argument to get errors. 
@@ -71,5 +75,6 @@ long long	ft_now(void);
 // always use with a message
 //otherwise it may return a pointer
 void	*ft_free_many(void *one, void *two, void *three, char *message);
+void	safe_print(t_philo *philo, char *message);
 
 #endif //PHILO_H

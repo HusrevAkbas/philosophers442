@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 14:43:18 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/30 14:33:52 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,12 @@ void	*ft_free_many(void *one, void *two, void *three, char *message)
 	if (message)
 		ft_get_or_set_errors(message);
 	return (NULL);
+}
+
+void	safe_print(t_philo *philo, char *message)
+{
+	philo->timestamp = ft_get_timestamp(philo->start_time);
+	pthread_mutex_lock(&philo->data->mute_print);
+	printf("%5i %3d %s\n", philo->timestamp, philo->name, message);
+	pthread_mutex_unlock(&philo->data->mute_print);
 }
