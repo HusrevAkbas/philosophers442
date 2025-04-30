@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/30 14:45:37 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/04/30 15:00:54 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,17 +185,30 @@ int	is_somone_dead_or_food_max_reached(t_data *data)
 
 int	take_forks(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->mute_fork);
+	pthread_mutex_t	*first;
+	pthread_mutex_t	*second;
+
+	if (philo->mute_fork2 > &philo->mute_fork)
+	{
+		first = philo->mute_fork2;
+		second = &philo->mute_fork;
+	}
+	else
+	{
+		first = &philo->mute_fork;
+		second = philo->mute_fork2;
+	}
 	safe_print(philo, "has taken a fork 1");
+	pthread_mutex_lock(first);
 	if (philo->mute_fork2)
 	{
-		pthread_mutex_lock(philo->mute_fork2);
 		safe_print(philo, "has taken a fork 2");
+		pthread_mutex_lock(second);
 	}
 	else
 	{
 		pthread_mutex_unlock(&philo->mute_philo);
-		pthread_mutex_unlock(&philo->mute_fork);
+		pthread_mutex_unlock(first);
 		while (!is_somone_dead_or_food_max_reached(philo->data));
 		return (1);
 	}
@@ -215,6 +228,23 @@ int	eat(t_philo *philo)
 	pthread_mutex_unlock(philo->mute_fork2);
 	return (0);
 }
+
+int	have_a_nice_sleep(t_philo *philo)
+{
+	if (is_somone_dead_or_food_max_reached(philo->data))
+		return (1);
+	pthread_mutex_lock(&philo->mute_philo);
+	pthread_mutex_lock(&philo->data->mute_data);
+	philo->timestamp = ft_get_timestamp(philo->data->start_time);
+	pthread_mutex_unlock(&philo->data->mute_data);
+	safe_print(philo, "is sleeping");
+	pthread_mutex_unlock(&philo->mute_philo);
+	usleep(philo->time_to_sleep * 1000);
+	if (is_somone_dead_or_food_max_reached(philo->data))
+		return (1);
+	return (0);
+}
+
 void	*routine(void	*arg)
 {
 	t_philo	*philo;
@@ -222,7 +252,6 @@ void	*routine(void	*arg)
 	philo = arg;
 	while (1)
 	{
-		usleep(50);
 		pthread_mutex_lock(&philo->mute_philo);
 		if (philo->hungry)
 		{
@@ -233,17 +262,7 @@ void	*routine(void	*arg)
 		}
 		philo->hungry = 1;
 		pthread_mutex_unlock(&philo->mute_philo);
-		usleep(100);
-		if (is_somone_dead_or_food_max_reached(philo->data))
-			return (NULL);
-		pthread_mutex_lock(&philo->mute_philo);
-		pthread_mutex_lock(&philo->data->mute_data);
-		philo->timestamp = ft_get_timestamp(philo->data->start_time);
-		pthread_mutex_unlock(&philo->data->mute_data);
-		safe_print(philo, "is sleeping");
-		pthread_mutex_unlock(&philo->mute_philo);
-		usleep(philo->time_to_sleep * 1000);
-		if (is_somone_dead_or_food_max_reached(philo->data))
+		if (have_a_nice_sleep(philo))
 			return (NULL);
 		pthread_mutex_lock(&philo->mute_philo);
 		pthread_mutex_lock(&philo->data->mute_data);
