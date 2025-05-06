@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/30 14:33:52 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/06 15:07:28 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	ft_get_timestamp(long long old)
 
 long long	ft_now(void)
 {
-	t_timeval	now;
+	struct timeval	now;
 
 	if (gettimeofday(&now, NULL) == -1)
 	{
@@ -48,4 +48,12 @@ void	safe_print(t_philo *philo, char *message)
 	pthread_mutex_lock(&philo->data->mute_print);
 	printf("%5i %3d %s\n", philo->timestamp, philo->name, message);
 	pthread_mutex_unlock(&philo->data->mute_print);
+}
+
+int	is_somone_dead_or_food_max_reached(t_data *data)
+{
+	if (*data->who_is_dead || data->philo_count
+		== *data->food_max_reached)
+		return (1);
+	return (0);
 }

@@ -1,31 +1,33 @@
 CFLAGS = -Wall -Werror -Wextra -g
 CC = cc
 
-SRC = philo.c errors.c argument_check.c utils.c
+SRC = philo.c errors.c argument_check.c utils.c routine.c init_philos.c
 OBJ = $(SRC:.c=.o)
 
 NAME = philo
 
-all : $(NAME) clean
-	./$(NAME) 1 303 100 100 4
-# check the issue when max food is 1 solved with additional mutex for shared pointer
-$(NAME) : $(OBJ)
+all : $(NAME)
+#	./$(NAME) 3 803 500 450
+$(NAME) : $(OBJ) philo.h
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
 
-$(OBJ) : $(SRC)
+$(OBJ) : $(SRC) philo.h
 	$(CC) $(CFLAGS) -c $(SRC)
 
 re : fclean all
 
 c : clean
 clean :
-	rm -f *.o
+	rm -fr ${OBJ}
 
 f : fclean
 fclean : clean
-	rm -f $(NAME)
+	rm -fr $(NAME)
 
 val :
-	valgrind --tool=helgrind ./$(NAME) 2 300 100 100 3
+	valgrind --tool=memcheck ./$(NAME) 32 610 200 100 32
+
+hel :
+	valgrind --tool=helgrind ./$(NAME) 32 300 100 100 32
 
 .phony : OBJ clean c re fclean f all val

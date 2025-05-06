@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/30 14:24:14 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/06 15:16:46 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-# define t_timeval struct timeval
-
 //ERRORS
 # define WRONG_ARGUMENT_COUNT	"Error: Wrong number of arguments\n"
 # define NEGATIVE_NUMBER		"Arguments must be a positive integer\n"
@@ -30,6 +28,7 @@
 # define NUMBER_GREATER_THAN_INT_MAX	"Argument is greater than INT_MAX\n"
 # define NUMBER_LOWER_THAN_INT_MIN		"Argument is lower than INT_MIN\n"
 # define NOT_A_NUMBER			"Argument is not a number\n"
+# define ERROR_CREATING_THREAD	"Error on creating threads\n"
 
 typedef struct s_philo
 {
@@ -46,7 +45,6 @@ typedef struct s_philo
 	pthread_t		thread;
 	pthread_mutex_t	mute_fork;
 	pthread_mutex_t	*mute_fork2;
-	pthread_mutex_t	mute_philo;
 }	t_philo;
 
 typedef struct s_data
@@ -66,15 +64,19 @@ typedef struct s_data
 //Use NULL as argument to get errors. 
 //Use a text as argument to add an error.
 //Returns NULL when setting errors or if there is no error
-char	*ft_get_or_set_errors(char *error);
-void	ft_check_args(char **argv);
-int		ft_atoi_safe(char *num);
-int		ft_get_timestamp(long long old);
-int		ft_isdigit(int c);
-long long	ft_now(void);
+char		*ft_get_or_set_errors(char *error);
+void		ft_check_args(char **argv);
+int			ft_atoi_safe(char *num);
+int			ft_get_timestamp(long long old);
+int			ft_isdigit(int c);
 // always use with a message
 //otherwise it may return a pointer
-void	*ft_free_many(void *one, void *two, void *three, char *message);
-void	safe_print(t_philo *philo, char *message);
+void		*ft_free_many(void *one, void *two, void *three, char *message);
+void		safe_print(t_philo *philo, char *message);
+void		*routine(void	*arg);
+int			is_somone_dead_or_food_max_reached(t_data *data);
+t_philo		**init_philos(t_data *data);
+t_philo		**go_to_bath(t_philo **philos, t_data *data);
+long long	ft_now(void);
 
 #endif //PHILO_H
