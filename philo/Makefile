@@ -25,9 +25,9 @@ fclean : clean
 	rm -fr $(NAME)
 
 val :
-	valgrind --tool=memcheck ./$(NAME) 32 610 200 100 32
+	valgrind --tool=memcheck ./$(NAME) 4 610 200 200 32
 
 hel :
-	valgrind --tool=helgrind ./$(NAME) 32 300 100 100 32
+	valgrind --tool=helgrind ./$(NAME) 33 300 100 100 32
 
 .phony : OBJ clean c re fclean f all val

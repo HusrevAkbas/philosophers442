@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/06 14:42:36 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/06 15:31:19 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,9 @@ void	*am_i_dead(void	*arg)
 	while (philos[i])
 	{
 		usleep(1000 / philos[0]->data->philo_count);
+		pthread_mutex_lock(&philos[i]->data->mute_data);
 		time_since_last_meal = ft_get_timestamp(philos[i]->last_meal);
+		pthread_mutex_unlock(&philos[i]->data->mute_data);
 		if (time_since_last_meal > philos[i]->time_to_die)
 		{
 			pthread_mutex_lock(&philos[i]->data->mute_data);
