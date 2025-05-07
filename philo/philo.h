@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/06 15:49:32 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/07 18:06:17 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int			ft_isdigit(int c);
 // always use with a message
 //otherwise it may return a pointer
 void		*ft_free_many(void *one, void *two, void *three, char *message);
-void		safe_print(t_philo *philo, char *message);
+int			safe_print(t_philo *philo, char *message);
 void		*routine(void	*arg);
 int			is_somone_dead_or_food_max_reached(t_data *data);
 t_philo		**init_philos(t_data *data);

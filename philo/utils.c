@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/06 15:29:38 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/07 18:03:25 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,15 @@
 
 int	ft_get_timestamp(long long old)
 {
-	return (ft_now() - old);
+	long long	now;
+
+	now = ft_now();
+	if (now == -1)
+	{
+		safe_print(NULL, ft_get_or_set_errors(NULL));
+		return (-1);
+	}
+	return (now - old);
 }
 
 long long	ft_now(void)
@@ -24,7 +32,7 @@ long long	ft_now(void)
 	if (gettimeofday(&now, NULL) == -1)
 	{
 		ft_get_or_set_errors("Can not get current time value\n");
-		return (0);
+		return (-1);
 	}
 	return (now.tv_sec * 1000 + now.tv_usec / 1000);
 }
@@ -42,12 +50,25 @@ void	*ft_free_many(void *one, void *two, void *three, char *message)
 	return (NULL);
 }
 
-void	safe_print(t_philo *philo, char *message)
+int	safe_print(t_philo *philo, char *message)
 {
-	philo->timestamp = ft_get_timestamp(philo->start_time);
 	pthread_mutex_lock(&philo->data->mute_print);
+	if (!philo)
+	{
+		if (message)
+			printf("%s", message);
+		pthread_mutex_unlock(&philo->data->mute_print);
+		return (1);
+	}
+	philo->timestamp = ft_get_timestamp(philo->start_time);
+	if (philo->timestamp == -1)
+	{
+		pthread_mutex_unlock(&philo->data->mute_print);
+		return (1);
+	}
 	printf("%5i %3d %s\n", philo->timestamp, philo->name, message);
 	pthread_mutex_unlock(&philo->data->mute_print);
+	return (0);
 }
 
 int	is_somone_dead_or_food_max_reached(t_data *data)

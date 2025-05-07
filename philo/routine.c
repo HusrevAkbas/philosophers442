@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/06 15:49:00 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/07 18:03:51 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ static void	find_first_second_forks(t_philo *philo, pthread_mutex_t **first,
 {
 	if (philo->mute_fork2 > &philo->mute_fork)
 	{
-		(*first) = philo->mute_fork2;
-		(*second) = &philo->mute_fork;
+		(*first) = &philo->mute_fork;
+		(*second) = philo->mute_fork2;
 	}
 	else
 	{
-		(*first) = &philo->mute_fork;
-		(*second) = philo->mute_fork2;
+		(*first) = philo->mute_fork2;
+		(*second) = &philo->mute_fork;
 	}
 }
 
@@ -81,6 +81,8 @@ static int	have_a_nice_sleep(t_philo *philo)
 	if (is_somone_dead_or_food_max_reached(philo->data))
 		return (1);
 	philo->timestamp = ft_get_timestamp(philo->data->start_time);
+	if (philo->timestamp == -1)
+		return (1);
 	safe_print(philo, "is sleeping");
 	usleep(philo->time_to_sleep * 1000);
 	if (is_somone_dead_or_food_max_reached(philo->data))
@@ -108,7 +110,10 @@ void	*routine(void	*arg)
 		if (have_a_nice_sleep(philo))
 			return (NULL);
 		philo->timestamp = ft_get_timestamp(philo->data->start_time);
+		if (philo->timestamp == -1)
+			return (NULL);
 		safe_print(philo, "is thinking");
+		usleep(1000);
 	}
 	return (NULL);
 }
