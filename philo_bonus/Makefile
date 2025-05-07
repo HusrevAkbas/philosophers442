@@ -30,4 +30,4 @@ val :
 hel :
 	valgrind --tool=helgrind --history-level=none ./$(NAME) 54 800 200 190 32
 
-.phony : clean c re fclean f all val hel
+.phony : OBJ clean c re fclean f all val
