@@ -4,5 +4,9 @@
 		"plaintext": false,
 		"markdown": false,
 		"scminput": false
+	},
+	"files.associations": {
+		"string.h": "c",
+		"pthread.h": "c"
 	}
 }

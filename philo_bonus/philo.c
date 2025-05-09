@@ -6,14 +6,27 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/07 18:55:01 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/09 15:32:34 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	set_args(t_data *data, char **args)
+// void	set_args(t_data *data, char **args)
+// {
+// 	data->philo_count = ft_atoi_safe(args[1]);
+// 	data->time_to_die = ft_atoi_safe(args[2]);
+// 	data->time_to_eat = ft_atoi_safe(args[3]);
+// 	data->time_to_sleep = ft_atoi_safe(args[4]);
+// 	if (args[5])
+// 		data->food_max = ft_atoi_safe(args[5]);
+// 	else
+// 		data->food_max = 0;
+// }
+
+int	init_data(t_data *data, char **args)
 {
+	//set_args(data, args);
 	data->philo_count = ft_atoi_safe(args[1]);
 	data->time_to_die = ft_atoi_safe(args[2]);
 	data->time_to_eat = ft_atoi_safe(args[3]);
@@ -22,41 +35,36 @@ void	set_args(t_data *data, char **args)
 		data->food_max = ft_atoi_safe(args[5]);
 	else
 		data->food_max = 0;
-}
-
-int	*init_data(t_data *data, char **args)
-{
-	set_args(data, args);
 	data->start_time = ft_now();
 	data->who_is_dead = 0;
 	data->food_max_reached = 0;
 	// pthread_mutex_init(&data->mute_data, NULL);
 	// pthread_mutex_init(&data->mute_print, NULL);
-	return (data);
+	return (0);
 }
 
 void	*am_i_dead(void	*arg)
 {
-	t_philo	**philos;
+	t_data	*data;
 	int		time_since_last_meal;
 	int		i;
 
-	philos = arg;
+	data = arg;
 	i = 0;
-	while (philos[i])
+	while (1)
 	{
-		usleep(1000 / philos[0]->data->philo_count);
+		usleep(1000 / data->philo_count);
 		//pthread_mutex_lock(&philos[i]->data->mute_data);
-		time_since_last_meal = ft_get_timestamp(philos[i]->last_meal);
+		time_since_last_meal = ft_get_timestamp(data->last_meal);
 		//pthread_mutex_unlock(&philos[i]->data->mute_data);
 		if (time_since_last_meal == -1)
 			return (NULL);
-		if (time_since_last_meal > philos[i]->time_to_die)
+		if (time_since_last_meal > data->time_to_die)
 		{
 			//pthread_mutex_lock(&philos[i]->data->mute_data);
-			philos[i]->data->who_is_dead = philos[i]->name;
+			data->who_is_dead = data->name;
 			//pthread_mutex_unlock(&philos[i]->data->mute_data);
-			safe_print(philos[i], "died");
+			safe_print(data, "died");
 			return (NULL);
 		}
 		i++;
@@ -64,38 +72,68 @@ void	*am_i_dead(void	*arg)
 	return (NULL);
 }
 
-int	start_threads(t_philo **philos)
+// int	start_threads(t_philo *philos)
+// {
+// 	(void) philos;
+	// int	i;
+	// int	j;
+
+	// i = 0;
+	// while (philos[i])
+	// {
+	// 	philos[i]->last_meal = ft_now();
+	// 	if (pthread_create(&philos[i]->thread, NULL, &routine, philos[i]))
+	// 	{
+	// 		ft_get_or_set_errors(ERROR_CREATING_THREAD);
+	// 		break ;
+	// 	}
+	// 	i++;
+	// }
+	// if (ft_get_or_set_errors(NULL))
+	// {
+	// 	j = 0;
+	// 	while (j < i)
+	// 		pthread_join(philos[j++]->thread, NULL);
+	// 	go_to_bath(philos, philos[0]->data);
+	// 	return (1);
+	// }
+// 	return (0);
+// }
+int	start_child_processes(t_data data, int *pids)
 {
 	int	i;
-	int	j;
-
+	
 	i = 0;
-	while (philos[i])
+	while (i < data.philo_count)
 	{
-		philos[i]->last_meal = ft_now();
-		if (pthread_create(&philos[i]->thread, NULL, &routine, philos[i]))
+		data.name = i + 1;
+		pids[i] = fork();
+		if (pids[i] == -1)
+			return (i);
+		if (pids[i] == 0) //call child process function
 		{
-			ft_get_or_set_errors(ERROR_CREATING_THREAD);
-			break ;
+			free (pids);
+			//work on routine. if someone dies or full of meal exit.
+			int j = 0;
+			while (j < data.name)
+			{
+				printf("i am working in child: %i with philo %i\n", getpid(), data.name);
+				sleep(2);
+				j++;
+			}
+			exit(data.name);
 		}
 		i++;
-	}
-	if (ft_get_or_set_errors(NULL))
-	{
-		j = 0;
-		while (j < i)
-			pthread_join(philos[j++]->thread, NULL);
-		go_to_bath(philos, philos[0]->data);
-		return (1);
 	}
 	return (0);
 }
 
 int	main(int argc, char *argv[])
 {
-	t_philo		philo;
-	t_data		data;
-	int			i;
+	t_data	data;
+	int		i;
+	pid_t	*pids;
+	int		status;
 
 	if (argc < 5 || argc > 6)
 		return (printf("Error: %s", WRONG_ARGUMENT_COUNT));
@@ -103,7 +141,18 @@ int	main(int argc, char *argv[])
 	if (ft_get_or_set_errors(NULL))
 		return (printf(INVALID_ARGUMENT));
 	init_data(&data, argv);
-	init_philos(&philo, &data);
+	pids = malloc((data.philo_count + 1) * sizeof(int));
+	memset(pids, 0, sizeof(int));
+	start_child_processes(data, pids);
+	while (1)
+	{
+		i = waitpid(-1, &status, 0);
+		if (i == -1)
+			break ;
+		printf("i am working in main. child exit: %i, status: %i\n", i, status);
+	}
+	free(pids);
+	
 	// if (start_threads(philo)) // will be replaced with fork functions
 	// 	return (printf(ERROR_CREATING_THREAD));
 	// while (!is_somone_dead_or_food_max_reached(data)) will be done in child process

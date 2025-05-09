@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/07 18:53:35 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/09 15:32:16 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <limits.h>
+# include <signal.h>
 # include <string.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <sys/wait.h>
 
 //ERRORS
 # define WRONG_ARGUMENT_COUNT	"Error: Wrong number of arguments\n"
@@ -30,29 +32,34 @@
 # define NOT_A_NUMBER			"Argument is not a number\n"
 # define ERROR_CREATING_THREAD	"Error on creating threads\n"
 
-typedef struct s_philo
+// typedef struct s_philo
+// {
+// 	int				name;
+// 	int				hungry;
+// 	int				food_counter;
+// 	int				timestamp;
+// 	struct s_data	*data;
+// 	long long		last_meal;
+// 	int				time_to_die;
+// 	int				time_to_eat;
+// 	int				time_to_sleep;
+// 	long long		start_time;
+// 	pthread_t		thread;
+// 	// pthread_mutex_t	mute_fork;
+// 	// pthread_mutex_t	*mute_fork2;
+// }	t_philo;
+
+typedef struct s_data
 {
 	int				name;
 	int				hungry;
 	int				food_counter;
-	int				timestamp;
-	struct s_data	*data;
-	long long		last_meal;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	long long		start_time;
-	pthread_t		thread;
-	// pthread_mutex_t	mute_fork;
-	// pthread_mutex_t	*mute_fork2;
-}	t_philo;
-
-typedef struct s_data
-{
 	int				who_is_dead;
 	int				philo_count;
 	int				food_max;
 	int				food_max_reached;
+	long long		last_meal;
+	int				timestamp;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
@@ -72,11 +79,11 @@ int			ft_isdigit(int c);
 // always use with a message
 //otherwise it may return a pointer
 void		*ft_free_many(void *one, void *two, void *three, char *message);
-int			safe_print(t_philo *philo, char *message);
+int			safe_print(t_data *data, char *message);
 void		*routine(void	*arg);
 int			is_somone_dead_or_food_max_reached(t_data *data);
-void		init_philos(t_philo *philo, t_data *data);
-//t_philo		**go_to_bath(t_philo **philos, t_data *data);
+// void		init_philo(t_philo *philo, t_data *data);
+// t_philo		**go_to_bath(t_philo **philos, t_data *data);
 long long	ft_now(void);
 int			unlock_mutex_return_one(pthread_mutex_t *mutex1,
 				pthread_mutex_t *mutex2);

@@ -4,7 +4,7 @@ CC = cc
 SRC = philo.c errors.c argument_check.c utils.c routine.c init_philos.c
 OBJ = $(SRC:.c=.o)
 
-NAME = philo
+NAME = philo_bonus
 
 all : $(NAME)
 #	./$(NAME) 3 803 500 450
@@ -25,9 +25,9 @@ fclean : clean
 	rm -fr $(NAME)
 
 val :
-	valgrind --tool=memcheck ./$(NAME) 4 810 200 200 3
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --trace-children=yes ./$(NAME) 4 810 200 200 3
 
 hel :
-	valgrind --tool=helgrind --history-level=none ./$(NAME) 54 800 200 190 32
+	valgrind --tool=helgrind --history-level=none --trace-children=yes ./$(NAME) 54 800 200 190 32
 
 .phony : OBJ clean c re fclean f all val

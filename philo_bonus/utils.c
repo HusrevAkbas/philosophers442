@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/07 18:03:25 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/09 15:31:56 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,36 +50,36 @@ void	*ft_free_many(void *one, void *two, void *three, char *message)
 	return (NULL);
 }
 
-int	safe_print(t_philo *philo, char *message)
+int	safe_print(t_data *data, char *message)
 {
-	pthread_mutex_lock(&philo->data->mute_print);
-	if (!philo)
+	// pthread_mutex_lock(&philo->data->mute_print);
+	if (!data)
 	{
 		if (message)
 			printf("%s", message);
-		pthread_mutex_unlock(&philo->data->mute_print);
+		// pthread_mutex_unlock(&philo->data->mute_print);
 		return (1);
 	}
-	philo->timestamp = ft_get_timestamp(philo->start_time);
-	if (philo->timestamp == -1)
+	data->timestamp = ft_get_timestamp(data->start_time);
+	if (data->timestamp == -1)
 	{
-		pthread_mutex_unlock(&philo->data->mute_print);
+		// pthread_mutex_unlock(&philo->data->mute_print);
 		return (1);
 	}
-	printf("%5i %3d %s\n", philo->timestamp, philo->name, message);
-	pthread_mutex_unlock(&philo->data->mute_print);
+	printf("%5i %3d %s\n", data->timestamp, data->name, message);
+	// pthread_mutex_unlock(&philo->data->mute_print);
 	return (0);
 }
 
 int	is_somone_dead_or_food_max_reached(t_data *data)
 {
-	pthread_mutex_lock(&data->mute_data);
-	if (*data->who_is_dead || data->philo_count
-		== *data->food_max_reached)
+	// pthread_mutex_lock(&data->mute_data);
+	if (data->who_is_dead || data->philo_count
+		== data->food_max_reached)
 	{
-		pthread_mutex_unlock(&data->mute_data);
+		// pthread_mutex_unlock(&data->mute_data);
 		return (1);
 	}
-	pthread_mutex_unlock(&data->mute_data);
+	//pthread_mutex_unlock(&data->mute_data);
 	return (0);
 }

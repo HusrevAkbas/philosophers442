@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:06:06 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/07 18:52:29 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/09 15:15:47 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,12 @@
 // 	return (NULL);
 // }
 
-void	init_philos(t_philo *philos, t_data *data)
-{
-	memset(philos, 0, sizeof(t_philo));
-	philos->data = data;
-	philos->time_to_die = data->time_to_die;
-	philos->time_to_eat = data->time_to_eat;
-	philos->time_to_sleep = data->time_to_sleep;
-	philos->start_time = data->start_time;
-}
+// void	init_philo(t_philo *philos, t_data *data)
+// {
+// 	memset(philos, 0, sizeof(t_philo));
+// 	philos->data = data;
+// 	philos->time_to_die = data->time_to_die;
+// 	philos->time_to_eat = data->time_to_eat;
+// 	philos->time_to_sleep = data->time_to_sleep;
+// 	philos->start_time = data->start_time;
+// }
