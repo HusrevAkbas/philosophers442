@@ -1,12 +1,10 @@
 {
-	"github.copilot.enable": {
-		"*": false,
-		"plaintext": false,
-		"markdown": false,
-		"scminput": false
-	},
 	"files.associations": {
 		"string.h": "c",
-		"pthread.h": "c"
+		"pthread.h": "c",
+		"semaphore.h": "c",
+		"stdlib.h": "c",
+		"signal.h": "c",
+		"fcntl.h": "c"
 	}
 }

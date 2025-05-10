@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/10 17:17:14 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/10 17:44:49 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	*am_i_dead(void	*arg)
 	i = 0;
 	while (1)
 	{
-		usleep(1000 / data->philo_count);
+		usleep(1000);
 		//pthread_mutex_lock(&philos[i]->data->mute_data);
 		time_since_last_meal = ft_get_timestamp(data->last_meal);
 		//pthread_mutex_unlock(&philos[i]->data->mute_data);
@@ -103,21 +103,27 @@ void	*am_i_dead(void	*arg)
 void	child(t_data data, int *pids)
 {
 	free (pids);
+	sem_close(data.semaphore);
 	data.semaphore = sem_open(SEM_NAME, O_RDWR);
 	if (data.semaphore == SEM_FAILED)
 	{
 		perror("SEM FAILED");
 		// printf("sem fail in child\n");
 	}
+	usleep(100 * data.name);
 	//sem_unlink(SEM_NAME);
 	//work on routine. if someone dies or full of meal exit.
 	int j = 0;
 	int val = -1;
 	while (j < data.name)
 	{
+		sem_wait(data.semaphore);
+		sem_wait(data.semaphore);
 		sem_getvalue(data.semaphore, &val);
 		printf("i am working in child with philo %i, semaphore value: %i\n", data.name, val);
 		sleep(1);
+		sem_post(data.semaphore);
+		sem_post(data.semaphore);
 		j++;
 	}
 	sem_close(data.semaphore);
@@ -129,17 +135,15 @@ int	start_child_processes(t_data data, int *pids)
 	unsigned int	i;
 	
 	i = 0;
-	//sem_close(data.semaphore);
 	while (i < data.philo_count)
 	{
 		data.name = i + 1;
+		data.last_meal = ft_now();
 		pids[i] = fork();
 		if (pids[i] == -1)
 			return (i);
 		if (pids[i] == 0) //call child process function
-		{
 			child(data, pids);
-		}
 		i++;
 	}
 	return (0);

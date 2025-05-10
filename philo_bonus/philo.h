@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/10 17:13:50 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/10 17:37:39 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define NOT_A_NUMBER			"Argument is not a number\n"
 # define ERROR_CREATING_THREAD	"Error on creating threads\n"
 
-# define SEM_NAME				"MYBRANDNEWSEMAPHORE"
+# define SEM_NAME				"MYBRANDNEWSEMAPHOREhuakbas"
 
 // typedef struct s_philo
 // {
