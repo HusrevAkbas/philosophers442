@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/09 15:32:16 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/10 17:13:50 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # include <limits.h>
 # include <signal.h>
 # include <string.h>
+# include <fcntl.h>
+# include <semaphore.h>
 # include <pthread.h>
 # include <sys/time.h>
 # include <sys/wait.h>
@@ -31,6 +33,8 @@
 # define NUMBER_LOWER_THAN_INT_MIN		"Argument is lower than INT_MIN\n"
 # define NOT_A_NUMBER			"Argument is not a number\n"
 # define ERROR_CREATING_THREAD	"Error on creating threads\n"
+
+# define SEM_NAME				"MYBRANDNEWSEMAPHORE"
 
 // typedef struct s_philo
 // {
@@ -55,7 +59,7 @@ typedef struct s_data
 	int				hungry;
 	int				food_counter;
 	int				who_is_dead;
-	int				philo_count;
+	unsigned int	philo_count;
 	int				food_max;
 	int				food_max_reached;
 	long long		last_meal;
@@ -64,6 +68,7 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	long long		start_time;
+	sem_t			*semaphore;
 	// pthread_mutex_t	mute_data;
 	// pthread_mutex_t	mute_print;
 }	t_data;

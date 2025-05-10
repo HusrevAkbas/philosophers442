@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/09 15:32:34 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/10 17:17:14 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,11 +99,37 @@ void	*am_i_dead(void	*arg)
 	// }
 // 	return (0);
 // }
+
+void	child(t_data data, int *pids)
+{
+	free (pids);
+	data.semaphore = sem_open(SEM_NAME, O_RDWR);
+	if (data.semaphore == SEM_FAILED)
+	{
+		perror("SEM FAILED");
+		// printf("sem fail in child\n");
+	}
+	//sem_unlink(SEM_NAME);
+	//work on routine. if someone dies or full of meal exit.
+	int j = 0;
+	int val = -1;
+	while (j < data.name)
+	{
+		sem_getvalue(data.semaphore, &val);
+		printf("i am working in child with philo %i, semaphore value: %i\n", data.name, val);
+		sleep(1);
+		j++;
+	}
+	sem_close(data.semaphore);
+	exit(data.name);
+}
+
 int	start_child_processes(t_data data, int *pids)
 {
-	int	i;
+	unsigned int	i;
 	
 	i = 0;
+	//sem_close(data.semaphore);
 	while (i < data.philo_count)
 	{
 		data.name = i + 1;
@@ -112,16 +138,7 @@ int	start_child_processes(t_data data, int *pids)
 			return (i);
 		if (pids[i] == 0) //call child process function
 		{
-			free (pids);
-			//work on routine. if someone dies or full of meal exit.
-			int j = 0;
-			while (j < data.name)
-			{
-				printf("i am working in child: %i with philo %i\n", getpid(), data.name);
-				sleep(2);
-				j++;
-			}
-			exit(data.name);
+			child(data, pids);
 		}
 		i++;
 	}
@@ -141,6 +158,10 @@ int	main(int argc, char *argv[])
 	if (ft_get_or_set_errors(NULL))
 		return (printf(INVALID_ARGUMENT));
 	init_data(&data, argv);
+	sem_unlink(SEM_NAME);
+	data.semaphore = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0777, (unsigned int) data.philo_count);
+	if (data.semaphore == SEM_FAILED)
+		return (printf("sem open failed\n"));
 	pids = malloc((data.philo_count + 1) * sizeof(int));
 	memset(pids, 0, sizeof(int));
 	start_child_processes(data, pids);
@@ -151,6 +172,7 @@ int	main(int argc, char *argv[])
 			break ;
 		printf("i am working in main. child exit: %i, status: %i\n", i, status);
 	}
+	sem_close(data.semaphore);
 	free(pids);
 	
 	// if (start_threads(philo)) // will be replaced with fork functions
