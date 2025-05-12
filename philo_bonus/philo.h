@@ -6,12 +6,14 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/12 13:32:19 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/12 15:55:17 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
+# define _GNU_SOURCE
+
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
@@ -59,7 +61,7 @@ typedef struct s_data
 	int				name;
 	int				hungry;
 	int				food_counter;
-	int				am_i_dead;
+	int				return_code;
 	int				philo_count;
 	int				food_max;
 	int				food_max_reached;
@@ -69,8 +71,10 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	long long		start_time;
+	pid_t			pid;
 	sem_t			*semaphore;
-	// pthread_mutex_t	mute_data;
+	pthread_t		thread;
+	pthread_mutex_t	mute_data;
 	// pthread_mutex_t	mute_print;
 }	t_data;
 
@@ -86,8 +90,7 @@ int			ft_isdigit(int c);
 //otherwise it may return a pointer
 void		*ft_free_many(void *one, void *two, void *three, char *message);
 int			safe_print(t_data *data, char *message);
-int			routine(t_data	*data);
-int			is_food_max_reached(t_data *data);
+void		*routine(void *arg);
 // void		init_philo(t_philo *philo, t_data *data);
 // t_philo		**go_to_bath(t_philo **philos, t_data *data);
 long long	ft_now(void);

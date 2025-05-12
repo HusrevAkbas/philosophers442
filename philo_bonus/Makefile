@@ -9,7 +9,7 @@ NAME = philo_bonus
 all : $(NAME) run
 
 run:
-	./$(NAME) 5 803 200 200 10
+	./$(NAME) 5 810 400 400 10
 
 $(NAME) : $(OBJ) philo.h
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)

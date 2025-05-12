@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/12 13:52:48 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/12 15:48:41 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,14 @@ int	safe_print(t_data *data, char *message)
 		if (message)
 			printf("%s", message);
 		// pthread_mutex_unlock(&philo->data->mute_print);
+		data->return_code = 3;
 		return (3);
 	}
 	data->timestamp = ft_get_timestamp(data->start_time);
 	if (data->timestamp == -1)
 	{
 		// pthread_mutex_unlock(&philo->data->mute_print);
+		data->return_code = 3;
 		return (3);
 	}
 	printf("%5i %3d %s\n", data->timestamp, data->name, message);
