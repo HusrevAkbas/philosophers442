@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/12 15:55:57 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/12 17:44:02 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,15 @@ static int	take_forks(t_data *data)
 
 static int	eat(t_data *data)
 {
+	data->food_counter++;
 	if (safe_print(data, "is eating"))
 		return (data->return_code = 3, 3);
+	if (data->food_counter == data->food_max)
+	{
+		sem_post(data->semaphore);
+		sem_post(data->semaphore);
+		return (data->return_code = 2, 2);
+	}
 	data->last_meal = ft_now();
 	if (data->last_meal == -1)
 	{
@@ -52,14 +59,11 @@ static int	eat(t_data *data)
 		sem_post(data->semaphore);
 		return (data->return_code = 3, 3);
 	}
-	data->food_counter++;
 	usleep(data->time_to_eat * 1000);
 	sem_post(data->semaphore);
 	sem_post(data->semaphore);
 	if (data->return_code)
 		return (data->return_code);
-	if (data->name == 1)
-		printf("counter: %i food max: %i\n", data->food_counter, data->food_max);
 	if (data->food_counter == data->food_max)
 		return (data->return_code = 2, 2);
 	return (0);
@@ -92,7 +96,9 @@ void	*routine(void *arg)
 		have_a_nice_sleep(data);
 		if (data->return_code)
 			return (&data->return_code);
+		pthread_mutex_lock(&data->mute_data);
 		data->timestamp = ft_get_timestamp(data->start_time);
+		pthread_mutex_unlock(&data->mute_data);
 		if (data->timestamp == -1)
 			return (data->return_code = 3, &data->return_code);
 		if (safe_print(data, "is thinking"))

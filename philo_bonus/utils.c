@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/12 15:48:41 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/12 17:41:07 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,23 +52,23 @@ void	*ft_free_many(void *one, void *two, void *three, char *message)
 
 int	safe_print(t_data *data, char *message)
 {
-	// pthread_mutex_lock(&philo->data->mute_print);
+	pthread_mutex_lock(&data->mute_data);
 	if (!data)
 	{
 		if (message)
 			printf("%s", message);
-		// pthread_mutex_unlock(&philo->data->mute_print);
+		pthread_mutex_unlock(&data->mute_data);
 		data->return_code = 3;
 		return (3);
 	}
 	data->timestamp = ft_get_timestamp(data->start_time);
 	if (data->timestamp == -1)
 	{
-		// pthread_mutex_unlock(&philo->data->mute_print);
+		pthread_mutex_unlock(&data->mute_data);
 		data->return_code = 3;
 		return (3);
 	}
 	printf("%5i %3d %s\n", data->timestamp, data->name, message);
-	// pthread_mutex_unlock(&philo->data->mute_print);
+	pthread_mutex_unlock(&data->mute_data);
 	return (0);
 }

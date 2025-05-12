@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/12 16:08:36 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/12 17:41:35 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,21 +46,18 @@ int	init_data(t_data *data, char **args)
 
 int	am_i_dead(t_data *data)
 {
-	while (1)
+	usleep(1500);
+	pthread_mutex_lock(&data->mute_data);
+	data->timestamp = ft_get_timestamp(data->last_meal);
+	pthread_mutex_unlock(&data->mute_data);
+	if (data->timestamp > data->time_to_die)
 	{
-		usleep(1500);
-		//pthread_mutex_lock(data->mute_data);
-		data->timestamp = ft_get_timestamp(data->last_meal);
-		//pthread_mutex_unlock(data->mute_data);
-		if (data->timestamp > data->time_to_die)
-		{
-			//pthread_mutex_lock(data->mute_data);
-			data->return_code = data->name;
-			//pthread_mutex_unlock(data->mute_data);
-			if (safe_print(data, "died"))
-				return (3);
-			return (data->return_code = 1, 1);
-		}
+		pthread_mutex_lock(&data->mute_data);
+		data->return_code = data->name;
+		pthread_mutex_unlock(&data->mute_data);
+		if (safe_print(data, "died"))
+			return (3);
+		return (data->return_code = 1, 1);
 	}
 	return (0);
 }
@@ -79,12 +76,22 @@ void	child(t_data data, int *pids)
 		exit(3);
 	}
 	usleep(10 * data.name);
+	pthread_mutex_init(&data.mute_data, NULL);
 	pthread_create(&data.thread, NULL, routine, &data);
-	while (!am_i_dead(&data) && data.food_counter != data.food_max)
-		;
+	pthread_detach(data.thread);
+	while (1)
+	{
+		if ( data.food_counter == data.food_max)
+		{
+			data.return_code = 2;
+			break ;
+		}
+		if (am_i_dead(&data))
+			break ;
+	}
+	pthread_mutex_destroy(&data.mute_data);
 	sem_close(data.semaphore);
 	exit(data.return_code);
-	pthread_join(data.thread, &result);
 }
 
 int	start_child_processes(t_data data, int *pids)
@@ -93,6 +100,7 @@ int	start_child_processes(t_data data, int *pids)
 	
 	i = 0;
 	data.last_meal = ft_now();
+	data.start_time = data.last_meal;
 	if (data.last_meal == -1)
 		return (printf("%s start_child_process\n", GET_TIME_OF_DAY_FAIL));
 	while (i < data.philo_count)
@@ -117,8 +125,8 @@ int	terminate_children(pid_t *pids, pid_t current)
 	while (pids[i])
 	{
 		printf("this works\n");
-		if (pids[i] != current)
-			kill(pids[i], SIGINT);
+		if (pids[i] != current || pids[i] == current)
+			kill(pids[i], SIGQUIT);
 		i++;
 	}
 	return (0);
@@ -159,6 +167,8 @@ int	main(int argc, char *argv[])
 		pid = waitpid(-1, &status, 0);
 		if (pid == -1)
 			break ;
+		if (WEXITSTATUS(status) == 2)
+			continue ;
 		if (WEXITSTATUS(status) > 0)
 		{
 			terminate_children(pids, pid);
