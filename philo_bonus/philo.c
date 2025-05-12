@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/10 17:44:49 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/12 13:56:56 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,9 @@ int	init_data(t_data *data, char **args)
 	else
 		data->food_max = 0;
 	data->start_time = ft_now();
-	data->who_is_dead = 0;
+	data->am_i_dead = 0;
 	data->food_max_reached = 0;
+	data->food_counter = 0;
 	// pthread_mutex_init(&data->mute_data, NULL);
 	// pthread_mutex_init(&data->mute_print, NULL);
 	return (0);
@@ -62,7 +63,7 @@ void	*am_i_dead(void	*arg)
 		if (time_since_last_meal > data->time_to_die)
 		{
 			//pthread_mutex_lock(&philos[i]->data->mute_data);
-			data->who_is_dead = data->name;
+			data->am_i_dead = data->name;
 			//pthread_mutex_unlock(&philos[i]->data->mute_data);
 			safe_print(data, "died");
 			return (NULL);
@@ -72,36 +73,10 @@ void	*am_i_dead(void	*arg)
 	return (NULL);
 }
 
-// int	start_threads(t_philo *philos)
-// {
-// 	(void) philos;
-	// int	i;
-	// int	j;
-
-	// i = 0;
-	// while (philos[i])
-	// {
-	// 	philos[i]->last_meal = ft_now();
-	// 	if (pthread_create(&philos[i]->thread, NULL, &routine, philos[i]))
-	// 	{
-	// 		ft_get_or_set_errors(ERROR_CREATING_THREAD);
-	// 		break ;
-	// 	}
-	// 	i++;
-	// }
-	// if (ft_get_or_set_errors(NULL))
-	// {
-	// 	j = 0;
-	// 	while (j < i)
-	// 		pthread_join(philos[j++]->thread, NULL);
-	// 	go_to_bath(philos, philos[0]->data);
-	// 	return (1);
-	// }
-// 	return (0);
-// }
-
 void	child(t_data data, int *pids)
 {
+	int	result;
+
 	free (pids);
 	sem_close(data.semaphore);
 	data.semaphore = sem_open(SEM_NAME, O_RDWR);
@@ -113,32 +88,22 @@ void	child(t_data data, int *pids)
 	usleep(100 * data.name);
 	//sem_unlink(SEM_NAME);
 	//work on routine. if someone dies or full of meal exit.
-	int j = 0;
-	int val = -1;
-	while (j < data.name)
-	{
-		sem_wait(data.semaphore);
-		sem_wait(data.semaphore);
-		sem_getvalue(data.semaphore, &val);
-		printf("i am working in child with philo %i, semaphore value: %i\n", data.name, val);
-		sleep(1);
-		sem_post(data.semaphore);
-		sem_post(data.semaphore);
-		j++;
-	}
+	result = routine(&data);
 	sem_close(data.semaphore);
-	exit(data.name);
+	exit(result);
 }
 
 int	start_child_processes(t_data data, int *pids)
 {
-	unsigned int	i;
+	int	i;
 	
 	i = 0;
+	data.last_meal = ft_now();
+	if (data.last_meal == -1)
+		return (printf("%s start_child_process\n", GET_TIME_OF_DAY_FAIL));
 	while (i < data.philo_count)
 	{
 		data.name = i + 1;
-		data.last_meal = ft_now();
 		pids[i] = fork();
 		if (pids[i] == -1)
 			return (i);
@@ -162,21 +127,32 @@ int	main(int argc, char *argv[])
 	if (ft_get_or_set_errors(NULL))
 		return (printf(INVALID_ARGUMENT));
 	init_data(&data, argv);
-	sem_unlink(SEM_NAME);
-	data.semaphore = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0777, (unsigned int) data.philo_count);
+	sem_unlink(SEM_NAME); //just to be sure that the name is available
+	data.semaphore = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0777, data.philo_count);
 	if (data.semaphore == SEM_FAILED)
 		return (printf("sem open failed\n"));
 	pids = malloc((data.philo_count + 1) * sizeof(int));
+	if (!pids)
+	{
+		unlink(SEM_NAME);
+		return (printf("%s main", MALLOC_FAIL));
+	}
 	memset(pids, 0, sizeof(int));
-	start_child_processes(data, pids);
+	if (start_child_processes(data, pids) > 0)
+	{
+		unlink(SEM_NAME);
+		return (1);
+	}
 	while (1)
 	{
+		// exit 1 when dead - exit 2 when full - exit 3 when error
 		i = waitpid(-1, &status, 0);
 		if (i == -1)
 			break ;
 		printf("i am working in main. child exit: %i, status: %i\n", i, status);
 	}
 	sem_close(data.semaphore);
+	unlink(SEM_NAME);
 	free(pids);
 	
 	// if (start_threads(philo)) // will be replaced with fork functions
