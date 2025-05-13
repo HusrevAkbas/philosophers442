@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/13 15:43:58 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/13 17:39:18 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,18 @@ int	init_data(t_data *data, char **args)
 	return (0);
 }
 
+void	post_all_semaphor_exit(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->philo_count)
+	{
+		sem_post(data->semaphore_exit);
+		i++;
+	}
+}
+
 void	*am_i_dead(void *arg)
 {
 	t_data	*data;
@@ -36,7 +48,7 @@ void	*am_i_dead(void *arg)
 	data = arg;
 	while (1)
 	{
-		usleep(2000);
+		usleep(1000);
 		sem_wait(data->semaphore_mute);
 		if (data->return_code)
 		{
@@ -47,12 +59,10 @@ void	*am_i_dead(void *arg)
 		if (data->timestamp > data->time_to_die)
 		{
 			data->return_code = 1;
-			while (data->philo_count)
-			{
-				sem_post(data->semaphore_exit);
-				data->philo_count--;
-			}
+			post_all_semaphor_exit(data);
 			sem_post(data->semaphore_mute);
+			if (data->philo_count == 1)
+				sem_post(data->semaphore_fork);
 			if (safe_print(data, "died"))
 			{
 				sem_wait(data->semaphore_mute);
@@ -108,28 +118,24 @@ void	child(t_data data, int *pids)
 	char	sem_name[5];
 
 	free (pids);
-	if (sem_close(data.semaphore_exit) == -1)
-	{
-		printf("NOT A VALID SEM 1\n");
-		exit(3);
-	}
-	if (sem_close(data.semaphore_fork) == -1)
-	{
-		printf("NOT A VALID SEM 2\n");
-		exit (3);
-	}
+	sem_close(data.semaphore_exit);
+	sem_close(data.semaphore_fork);
 	memset(sem_name, '0', 5);
 	change_sem_name(&data, sem_name);
 	sem_unlink(sem_name);
 	data.semaphore_mute = sem_open(sem_name, O_CREAT | O_RDWR, 0600, 1);
 	if (data.semaphore_mute == SEM_FAILED)
-		exit(3); // CLEAN B4
+		exit(3);
 	data.semaphore_exit = sem_open(SEM_EXIT, O_RDWR);
 	if (data.semaphore_exit == SEM_FAILED)
+	{
+		sem_close(data.semaphore_mute);
 		exit(3);
+	}
 	data.semaphore_fork = sem_open(SEM_NAME, O_RDWR);
 	if (data.semaphore_fork == SEM_FAILED)
 	{
+		sem_close(data.semaphore_mute);
 		sem_close(data.semaphore_exit);
 		exit(3);
 	}
@@ -143,13 +149,8 @@ void	child(t_data data, int *pids)
 	code = data.return_code;
 	if (data.return_code == 2)
 	{
-		printf("LISTEN TO ME\n");
 		usleep(data.time_to_eat * 1100);
-		while (data.philo_count)
-		{
-			sem_post(data.semaphore_exit);
-			data.philo_count--;
-		}
+		post_all_semaphor_exit(&data);
 	}
 	sem_post(data.semaphore_mute);
 	sem_close(data.semaphore_exit);
@@ -175,23 +176,8 @@ int	start_child_processes(t_data data, int *pids)
 		if (pids[i] == -1)
 			return (-1);
 		data.pid = pids[i];
-		if (pids[i] == 0) //call child process function
+		if (pids[i] == 0)
 			child(data, pids);
-		i++;
-	}
-	return (0);
-}
-
-int	terminate_children(pid_t *pids, pid_t current)
-{
-	int	i;
-
-	i = 0;
-	while (pids[i])
-	{
-		printf("this works\n");
-		if (pids[i] != current || pids[i] == current)
-			kill(pids[i], SIGQUIT);
 		i++;
 	}
 	return (0);
@@ -210,12 +196,12 @@ int	main(int argc, char *argv[])
 	if (ft_get_or_set_errors(NULL))
 		return (printf(INVALID_ARGUMENT));
 	init_data(&data, argv);
-	sem_unlink(SEM_NAME); //just to be sure that the name is available
+	sem_unlink(SEM_NAME);
 	sem_unlink(SEM_EXIT);
-	data.semaphore_fork = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0777, data.philo_count);
+	data.semaphore_fork = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0600, data.philo_count);
 	if (data.semaphore_fork == SEM_FAILED)
 		return (printf("sem open failed\n"));
-	data.semaphore_exit = sem_open(SEM_EXIT, O_CREAT | O_RDWR, 0777, 0);
+	data.semaphore_exit = sem_open(SEM_EXIT, O_CREAT | O_RDWR, 0600, 0);
 	if (data.semaphore_exit == SEM_FAILED)
 	{
 		sem_close(data.semaphore_fork);
@@ -243,27 +229,16 @@ int	main(int argc, char *argv[])
 	}
 	while (1)
 	{
-		// exit 1 when dead - exit 2 when full - exit 3 when error
 		pid = waitpid(-1, &status, 0);
 		if (pid == -1)
 			break ;
 		if (WEXITSTATUS(status) == 2)
 			continue ;
-		printf("i am working in main. child exit: %i, status: %i\n", pid, status);
 	}
 	sem_close(data.semaphore_fork);
 	sem_close(data.semaphore_exit);
 	sem_unlink(SEM_NAME);
 	sem_unlink(SEM_EXIT);
 	free(pids);
-	
-	// if (start_threads(philo)) // will be replaced with fork functions
-	// 	return (printf(ERROR_CREATING_THREAD));
-	// while (!is_somone_dead_or_food_max_reached(data)) will be done in child process
-	// 	am_i_dead(philo);
-	// i = 0;
-	// while (philo[i])	will be waited for child processes
-	// 	pthread_join(philo[i++]->thread, NULL);
-	// go_to_bath(philo, data);	// no more allocated memory. will be handled in waitpid
 	return (0);
 }
