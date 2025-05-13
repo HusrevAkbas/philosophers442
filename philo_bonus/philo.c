@@ -6,27 +6,14 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/13 12:28:55 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:05:30 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// void	set_args(t_data *data, char **args)
-// {
-// 	data->philo_count = ft_atoi_safe(args[1]);
-// 	data->time_to_die = ft_atoi_safe(args[2]);
-// 	data->time_to_eat = ft_atoi_safe(args[3]);
-// 	data->time_to_sleep = ft_atoi_safe(args[4]);
-// 	if (args[5])
-// 		data->food_max = ft_atoi_safe(args[5]);
-// 	else
-// 		data->food_max = 0;
-// }
-
 int	init_data(t_data *data, char **args)
 {
-	//set_args(data, args);
 	data->philo_count = ft_atoi_safe(args[1]);
 	data->time_to_die = ft_atoi_safe(args[2]);
 	data->time_to_eat = ft_atoi_safe(args[3]);
@@ -39,8 +26,6 @@ int	init_data(t_data *data, char **args)
 	data->return_code = 0;
 	data->food_max_reached = 0;
 	data->food_counter = 0;
-	// pthread_mutex_init(&data->mute_data, NULL);
-	// pthread_mutex_init(&data->mute_print, NULL);
 	return (0);
 }
 
@@ -56,7 +41,7 @@ void	*am_i_dead(void *arg)
 		if (data->return_code)
 		{
 			pthread_mutex_unlock(&data->mute_data);
-			break ;
+			return (NULL);
 		}
 		pthread_mutex_unlock(&data->mute_data);
 		usleep(1500);
@@ -103,6 +88,8 @@ void	*wait_for_semaphore(void *arg)
 
 void	child(t_data data, int *pids)
 {
+	int	code;
+
 	free (pids);
 	if (sem_close(data.semaphore_exit) == -1)
 	{
@@ -125,13 +112,17 @@ void	child(t_data data, int *pids)
 	}
 	pthread_mutex_init(&data.mute_data, NULL);
 	pthread_create(&data.th_wait_semaphore, NULL, wait_for_semaphore, &data);
+	pthread_detach(data.th_wait_semaphore);
 	pthread_create(&data.th_check_dead, NULL, am_i_dead, &data);
+	pthread_detach(data.th_check_dead);
+	usleep(data.name * 200);
 	routine(&data);
 	pthread_mutex_lock(&data.mute_data);
+	code = data.return_code;
 	if (data.return_code == 2)
 	{
 		printf("LISTEN TO ME\n");
-		usleep(data.time_to_die * 3);
+		usleep(data.time_to_eat * 1100);
 		while (data.philo_count)
 		{
 			sem_post(data.semaphore_exit);
@@ -139,12 +130,11 @@ void	child(t_data data, int *pids)
 		}
 	}
 	pthread_mutex_unlock(&data.mute_data);
-	pthread_join(data.th_check_dead, NULL);
-	pthread_join(data.th_wait_semaphore, NULL);
+	//pthread_join(data.th_check_dead, NULL);
 	pthread_mutex_destroy(&data.mute_data);
 	sem_close(data.semaphore_exit);
 	sem_close(data.semaphore_fork);
-	exit(data.return_code);
+	exit(code);
 }
 
 int	start_child_processes(t_data data, int *pids)
