@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/13 14:05:30 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/13 15:43:58 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,35 +36,33 @@ void	*am_i_dead(void *arg)
 	data = arg;
 	while (1)
 	{
-		
-		pthread_mutex_lock(&data->mute_data);
+		usleep(2000);
+		sem_wait(data->semaphore_mute);
 		if (data->return_code)
 		{
-			pthread_mutex_unlock(&data->mute_data);
+			sem_post(data->semaphore_mute);
 			return (NULL);
 		}
-		pthread_mutex_unlock(&data->mute_data);
-		usleep(1500);
-		pthread_mutex_lock(&data->mute_data);
 		data->timestamp = ft_get_timestamp(data->last_meal);
-		pthread_mutex_unlock(&data->mute_data);
 		if (data->timestamp > data->time_to_die)
 		{
-			pthread_mutex_lock(&data->mute_data);
 			data->return_code = 1;
-			pthread_mutex_unlock(&data->mute_data);
 			while (data->philo_count)
 			{
 				sem_post(data->semaphore_exit);
 				data->philo_count--;
 			}
+			sem_post(data->semaphore_mute);
 			if (safe_print(data, "died"))
 			{
+				sem_wait(data->semaphore_mute);
 				data->return_code = 3;
+				sem_post(data->semaphore_mute);
 				return (NULL);
 			}
 			return (NULL);
 		}
+		sem_post(data->semaphore_mute);
 	}
 	return (NULL);
 }
@@ -75,20 +73,39 @@ void	*wait_for_semaphore(void *arg)
 
 	data = arg;
 	sem_wait(data->semaphore_exit);
-	pthread_mutex_lock(&data->mute_data);
+	sem_wait(data->semaphore_mute);
 	data->return_code = 1;
+	sem_post(data->semaphore_mute);
 	while (data->philo_count)
 	{
 		sem_post(data->semaphore_exit);
 		data->philo_count--;
 	}
-	pthread_mutex_unlock(&data->mute_data);
 	return (NULL);
+}
+
+int	change_sem_name(t_data *data, char *semname)
+{
+	int	i;
+	int	name;
+
+	name = data->name;
+	i = 0;
+	semname[4] = 0;
+	while (name % 10 > 0 && i < 5)
+	{
+		semname[i] = (name % 10) + 48;
+		i++;
+		name = name / 10;
+	}
+	semname[4] = 0;
+	return (0);
 }
 
 void	child(t_data data, int *pids)
 {
-	int	code;
+	int		code;
+	char	sem_name[5];
 
 	free (pids);
 	if (sem_close(data.semaphore_exit) == -1)
@@ -101,6 +118,12 @@ void	child(t_data data, int *pids)
 		printf("NOT A VALID SEM 2\n");
 		exit (3);
 	}
+	memset(sem_name, '0', 5);
+	change_sem_name(&data, sem_name);
+	sem_unlink(sem_name);
+	data.semaphore_mute = sem_open(sem_name, O_CREAT | O_RDWR, 0600, 1);
+	if (data.semaphore_mute == SEM_FAILED)
+		exit(3); // CLEAN B4
 	data.semaphore_exit = sem_open(SEM_EXIT, O_RDWR);
 	if (data.semaphore_exit == SEM_FAILED)
 		exit(3);
@@ -110,14 +133,13 @@ void	child(t_data data, int *pids)
 		sem_close(data.semaphore_exit);
 		exit(3);
 	}
-	pthread_mutex_init(&data.mute_data, NULL);
 	pthread_create(&data.th_wait_semaphore, NULL, wait_for_semaphore, &data);
 	pthread_detach(data.th_wait_semaphore);
 	pthread_create(&data.th_check_dead, NULL, am_i_dead, &data);
 	pthread_detach(data.th_check_dead);
-	usleep(data.name * 200);
+	usleep(data.name * 100);
 	routine(&data);
-	pthread_mutex_lock(&data.mute_data);
+	sem_wait(data.semaphore_mute);
 	code = data.return_code;
 	if (data.return_code == 2)
 	{
@@ -129,11 +151,11 @@ void	child(t_data data, int *pids)
 			data.philo_count--;
 		}
 	}
-	pthread_mutex_unlock(&data.mute_data);
-	//pthread_join(data.th_check_dead, NULL);
-	pthread_mutex_destroy(&data.mute_data);
+	sem_post(data.semaphore_mute);
 	sem_close(data.semaphore_exit);
 	sem_close(data.semaphore_fork);
+	sem_close(data.semaphore_mute);
+	sem_unlink(sem_name);
 	exit(code);
 }
 
@@ -197,7 +219,7 @@ int	main(int argc, char *argv[])
 	if (data.semaphore_exit == SEM_FAILED)
 	{
 		sem_close(data.semaphore_fork);
-		unlink(SEM_NAME);
+		sem_unlink(SEM_NAME);
 		return (printf("sem open failed\n"));
 	}
 	pids = malloc((data.philo_count + 1) * sizeof(int));
@@ -205,8 +227,8 @@ int	main(int argc, char *argv[])
 	{
 		sem_close(data.semaphore_fork);
 		sem_close(data.semaphore_exit);
-		unlink(SEM_NAME);
-		unlink(SEM_EXIT);
+		sem_unlink(SEM_NAME);
+		sem_unlink(SEM_EXIT);
 		return (printf("%s main", MALLOC_FAIL));
 	}
 	memset(pids, 0, sizeof(int));
@@ -231,8 +253,8 @@ int	main(int argc, char *argv[])
 	}
 	sem_close(data.semaphore_fork);
 	sem_close(data.semaphore_exit);
-	unlink(SEM_NAME);
-	unlink(SEM_EXIT);
+	sem_unlink(SEM_NAME);
+	sem_unlink(SEM_EXIT);
 	free(pids);
 	
 	// if (start_threads(philo)) // will be replaced with fork functions

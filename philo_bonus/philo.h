@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/13 11:41:26 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:58:46 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,6 @@
 # define SEM_NAME				"MYBRANDNEWSEMAPHOREhuakbas"
 # define SEM_EXIT				"MYSEMAPHORETOEXIThuakbas"
 
-// typedef struct s_philo
-// {
-// 	int				name;
-// 	int				hungry;
-// 	int				food_counter;
-// 	int				timestamp;
-// 	struct s_data	*data;
-// 	long long		last_meal;
-// 	int				time_to_die;
-// 	int				time_to_eat;
-// 	int				time_to_sleep;
-// 	long long		start_time;
-// 	pthread_t		thread;
-// 	// pthread_mutex_t	mute_fork;
-// 	// pthread_mutex_t	*mute_fork2;
-// }	t_philo;
-
 typedef struct s_data
 {
 	int				name;
@@ -75,9 +58,10 @@ typedef struct s_data
 	pid_t			pid;
 	sem_t			*semaphore_fork;
 	sem_t			*semaphore_exit;
+	sem_t			*semaphore_mute;
 	pthread_t		th_wait_semaphore;
 	pthread_t		th_check_dead;
-	pthread_mutex_t	mute_data;
+	// pthread_mutex_t	mute_data;
 	// pthread_mutex_t	mute_print;
 }	t_data;
 
