@@ -9,7 +9,7 @@ NAME = philo_bonus
 all : $(NAME) run
 
 run:
-	./$(NAME) 3 810 400 400 4
+	./$(NAME) 5 810 200 200 20
 
 $(NAME) : $(OBJ) philo.h
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
@@ -28,9 +28,9 @@ fclean : clean
 	rm -fr $(NAME)
 
 val :
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./$(NAME) 4 810 200 200 3
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./$(NAME) 4 810 200 200 8
 
 hel :
-	valgrind --tool=helgrind --history-level=none --trace-children=yes ./$(NAME) 54 800 200 190 32
+	valgrind --tool=helgrind --history-level=none ./$(NAME) 4 800 200 190 2
 
 .phony : OBJ clean c re fclean f all val

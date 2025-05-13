@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/12 15:55:17 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/13 11:41:26 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 # define GET_TIME_OF_DAY_FAIL	"get_time_of_day failed in"
 
 # define SEM_NAME				"MYBRANDNEWSEMAPHOREhuakbas"
+# define SEM_EXIT				"MYSEMAPHORETOEXIThuakbas"
 
 // typedef struct s_philo
 // {
@@ -72,8 +73,10 @@ typedef struct s_data
 	int				time_to_sleep;
 	long long		start_time;
 	pid_t			pid;
-	sem_t			*semaphore;
-	pthread_t		thread;
+	sem_t			*semaphore_fork;
+	sem_t			*semaphore_exit;
+	pthread_t		th_wait_semaphore;
+	pthread_t		th_check_dead;
 	pthread_mutex_t	mute_data;
 	// pthread_mutex_t	mute_print;
 }	t_data;
@@ -90,7 +93,7 @@ int			ft_isdigit(int c);
 //otherwise it may return a pointer
 void		*ft_free_many(void *one, void *two, void *three, char *message);
 int			safe_print(t_data *data, char *message);
-void		*routine(void *arg);
+int			routine(t_data *data);
 // void		init_philo(t_philo *philo, t_data *data);
 // t_philo		**go_to_bath(t_philo **philos, t_data *data);
 long long	ft_now(void);

@@ -5,6 +5,7 @@
 		"semaphore.h": "c",
 		"stdlib.h": "c",
 		"signal.h": "c",
-		"fcntl.h": "c"
+		"fcntl.h": "c",
+		"limits.h": "c"
 	}
 }
