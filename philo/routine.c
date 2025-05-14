@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/07 18:03:51 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:46:13 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 static void	find_first_second_forks(t_philo *philo, pthread_mutex_t **first,
 	pthread_mutex_t **second)
 {
+	if (!philo->mute_fork2)
+		return ;
 	if (philo->mute_fork2 > &philo->mute_fork)
 	{
 		(*first) = &philo->mute_fork;
