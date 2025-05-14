@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/07 18:03:25 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:10:47 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ int	safe_print(t_philo *philo, char *message)
 
 int	is_somone_dead_or_food_max_reached(t_data *data)
 {
+	usleep(100);
 	pthread_mutex_lock(&data->mute_data);
 	if (*data->who_is_dead || data->philo_count
 		== *data->food_max_reached)
