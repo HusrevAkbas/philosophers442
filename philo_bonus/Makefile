@@ -6,7 +6,7 @@ OBJ = $(SRC:.c=.o)
 
 NAME = philo_bonus
 
-all : $(NAME) run
+all : $(NAME)
 
 run:
 	./$(NAME) 10 810 400 100 4
@@ -33,4 +33,4 @@ val :
 hel :
 	valgrind --tool=helgrind --history-level=none ./$(NAME) 4 800 200 190 2
 
-.phony : OBJ clean c re fclean f all val drd
+.phony : clean c re fclean f all val hel run

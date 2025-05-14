@@ -7,7 +7,7 @@ OBJ = $(SRC:.c=.o)
 NAME = philo
 
 all : $(NAME)
-#	./$(NAME) 3 803 500 450
+
 $(NAME) : $(OBJ) philo.h
 	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
 
@@ -25,7 +25,7 @@ fclean : clean
 	rm -fr $(NAME)
 
 val :
-	valgrind --tool=memcheck ./$(NAME) 4 810 200 200 3
+	valgrind --tool=memcheck  --leak-check=full --show-leak-kinds=all ./$(NAME) 5 810 200 200 10
 
 hel :
 	valgrind --tool=helgrind --history-level=none ./$(NAME) 54 800 200 190 32
