@@ -6,13 +6,13 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 14:43:00 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:54:07 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_isdigit(int c)
+static int	ft_isdigit(int c)
 {
 	if (c < '0' || c > '9')
 		return (0);
@@ -20,7 +20,7 @@ int	ft_isdigit(int c)
 		return (1);
 }
 
-int	check_overflow(long num)
+static int	check_overflow(long num)
 {
 	if (num > INT_MAX)
 	{
@@ -35,7 +35,7 @@ int	check_overflow(long num)
 	return (num);
 }
 
-int	check_non_numerical(char *num, int is_n)
+static int	check_non_numerical(char *num, int is_n)
 {
 	int	i;
 

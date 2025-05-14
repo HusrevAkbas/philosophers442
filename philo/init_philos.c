@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:06:06 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/06 14:30:43 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:55:37 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_philo	**go_to_bath(t_philo **philos, t_data *data)
 	return (NULL);
 }
 
-t_philo	**create_philos(t_philo **philos, t_data *data)
+static t_philo	**create_philos(t_philo **philos, t_data *data)
 {
 	int	i;
 
@@ -64,7 +64,7 @@ t_philo	**create_philos(t_philo **philos, t_data *data)
 	return (philos);
 }
 
-void	set_second_forks(t_philo **philos, t_data *data)
+static void	set_second_forks(t_philo **philos, t_data *data)
 {
 	int	i;
 

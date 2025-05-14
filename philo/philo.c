@@ -6,13 +6,13 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/07 18:04:24 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:56:49 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	set_args(t_data *data, char **args)
+static void	set_args(t_data *data, char **args)
 {
 	data->philo_count = ft_atoi_safe(args[1]);
 	data->time_to_die = ft_atoi_safe(args[2]);
@@ -24,7 +24,7 @@ void	set_args(t_data *data, char **args)
 		data->food_max = 0;
 }
 
-t_data	*init_data(char **args)
+static t_data	*init_data(char **args)
 {
 	t_data	*data;
 
@@ -49,7 +49,7 @@ t_data	*init_data(char **args)
 	return (data);
 }
 
-void	*am_i_dead(void	*arg)
+static void	*am_i_dead(void	*arg)
 {
 	t_philo	**philos;
 	int		time_since_last_meal;
@@ -78,7 +78,7 @@ void	*am_i_dead(void	*arg)
 	return (NULL);
 }
 
-int	start_threads(t_philo **philos)
+static int	start_threads(t_philo **philos)
 {
 	int	i;
 	int	j;

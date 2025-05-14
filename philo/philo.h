@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/07 18:06:17 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:57:24 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ char		*ft_get_or_set_errors(char *error);
 void		ft_check_args(char **argv);
 int			ft_atoi_safe(char *num);
 int			ft_get_timestamp(long long old);
-int			ft_isdigit(int c);
 // always use with a message
 //otherwise it may return a pointer
 void		*ft_free_many(void *one, void *two, void *three, char *message);
