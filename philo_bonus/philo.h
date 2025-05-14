@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 13:34:21 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:02:33 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,10 @@
 typedef struct s_data
 {
 	int				name;
-	int				hungry;
 	int				food_counter;
 	int				return_code;
 	int				philo_count;
 	int				food_max;
-	int				food_max_reached;
 	long long		last_meal;
 	int				timestamp;
 	int				time_to_die;
@@ -64,8 +62,6 @@ typedef struct s_data
 	sem_t			*sem_mute;
 	pthread_t		th_wait_semaphore;
 	pthread_t		th_check_dead;
-	// pthread_mutex_t	mute_data;
-	// pthread_mutex_t	mute_print;
 }	t_data;
 
 //Use NULL as argument to get errors. 
@@ -75,14 +71,8 @@ char		*ft_get_or_set_errors(char *error);
 void		ft_check_args(char **argv);
 int			ft_atoi_safe(char *num);
 int			ft_get_timestamp(long long old);
-int			ft_isdigit(int c);
-// always use with a message
-//otherwise it may return a pointer
-void		*ft_free_many(void *one, void *two, void *three, char *message);
 int			safe_print(t_data *data, char *message);
 int			routine(t_data *data);
-// void		init_philo(t_philo *philo, t_data *data);
-// t_philo		**go_to_bath(t_philo **philos, t_data *data);
 long long	ft_now(void);
 int			unlock_mutex_return_one(pthread_mutex_t *mutex1,
 				pthread_mutex_t *mutex2);

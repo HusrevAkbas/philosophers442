@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 13:34:21 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:01:29 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,6 @@ long long	ft_now(void)
 		return (-1);
 	}
 	return (now.tv_sec * 1000 + now.tv_usec / 1000);
-}
-
-void	*ft_free_many(void *one, void *two, void *three, char *message)
-{
-	if (one)
-		free (one);
-	if (two)
-		free (two);
-	if (three)
-		free (three);
-	if (message)
-		ft_get_or_set_errors(message);
-	return (NULL);
 }
 
 int	safe_print(t_data *data, char *message)

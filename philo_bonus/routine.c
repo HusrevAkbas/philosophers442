@@ -6,13 +6,13 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 14:34:08 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:00:48 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	set_or_check_return_code(t_data *data, int num)
+static int	set_or_check_return_code(t_data *data, int num)
 {
 	sem_wait(data->sem_mute);
 	if (num == 0)

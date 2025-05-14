@@ -6,13 +6,13 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 13:34:21 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:02:44 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	init_data(t_data *data, char **args)
+static int	init_data(t_data *data, char **args)
 {
 	data->philo_count = ft_atoi_safe(args[1]);
 	data->time_to_die = ft_atoi_safe(args[2]);
@@ -24,12 +24,11 @@ int	init_data(t_data *data, char **args)
 		data->food_max = 0;
 	data->start_time = ft_now();
 	data->return_code = 0;
-	data->food_max_reached = 0;
 	data->food_counter = 0;
 	return (0);
 }
 
-int	start_child_processes(t_data data, int *pids)
+static int	start_child_processes(t_data data, int *pids)
 {
 	int	i;
 
@@ -52,7 +51,7 @@ int	start_child_processes(t_data data, int *pids)
 	return (0);
 }
 
-int	open_semaphore_main(t_data *data)
+static int	open_semaphore_main(t_data *data)
 {
 	char	*name;
 
@@ -79,7 +78,7 @@ int	open_semaphore_main(t_data *data)
 	return (0);
 }
 
-void	wait_children(t_data *data)
+static void	wait_children(t_data *data)
 {
 	int	status;
 	int	pid;

@@ -6,13 +6,13 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 13:22:32 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 13:36:16 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:59:47 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*am_i_dead(void *arg)
+static void	*am_i_dead(void *arg)
 {
 	t_data	*data;
 
@@ -40,7 +40,7 @@ void	*am_i_dead(void *arg)
 	return (NULL);
 }
 
-void	*wait_for_semaphore(void *arg)
+static void	*wait_for_semaphore(void *arg)
 {
 	t_data	*data;
 
@@ -57,7 +57,7 @@ void	*wait_for_semaphore(void *arg)
 	return (NULL);
 }
 
-int	change_sem_name(t_data *data, char *semname)
+static int	change_sem_name(t_data *data, char *semname)
 {
 	int	i;
 	int	name;
@@ -75,7 +75,7 @@ int	change_sem_name(t_data *data, char *semname)
 	return (0);
 }
 
-void	open_semaphore_child(t_data *data, char *sem_name)
+static void	open_semaphore_child(t_data *data, char *sem_name)
 {
 	sem_unlink(sem_name);
 	data->sem_mute = sem_open(sem_name, O_CREAT | O_RDWR, 0600, 1);
