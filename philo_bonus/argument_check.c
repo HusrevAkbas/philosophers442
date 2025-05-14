@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/04/02 14:43:00 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:30:59 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,11 @@ void	ft_check_args(char **argv)
 		{
 			ft_get_or_set_errors(NEGATIVE_NUMBER);
 			printf("Argument %d: %s", i, NEGATIVE_NUMBER);
+		}
+		else if (i == 1 && a > 1000)
+		{
+			ft_get_or_set_errors(BIG_NUMBER_FOR_PHLOS);
+			printf("Argument %d: %s", i, BIG_NUMBER_FOR_PHLOS);
 		}
 		i++;
 	}

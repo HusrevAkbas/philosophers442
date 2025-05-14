@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/13 15:24:09 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:34:21 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	*ft_free_many(void *one, void *two, void *three, char *message)
 
 int	safe_print(t_data *data, char *message)
 {
-	sem_wait(data->semaphore_mute);
+	sem_wait(data->sem_mute);
 	if (!data)
 	{
 		if (message)
@@ -67,6 +67,21 @@ int	safe_print(t_data *data, char *message)
 		return (3);
 	}
 	printf("%5i %3d %s\n", data->timestamp, data->name, message);
-	sem_post(data->semaphore_mute);
+	sem_post(data->sem_mute);
 	return (0);
+}
+
+void	close_semaphores(sem_t *sem1, sem_t *sem2, sem_t *sem3, int unlink)
+{
+	if (sem1)
+		sem_close(sem1);
+	if (sem2)
+		sem_close(sem2);
+	if (sem3)
+		sem_close(sem3);
+	if (unlink)
+	{
+		sem_unlink(SEM_NAME);
+		sem_unlink(SEM_EXIT);
+	}
 }

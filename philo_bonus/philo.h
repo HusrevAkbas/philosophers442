@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/13 14:58:46 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:34:21 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@
 # define NOT_A_NUMBER			"Argument is not a number\n"
 # define ERROR_CREATING_THREAD	"Error on creating threads\n"
 # define GET_TIME_OF_DAY_FAIL	"get_time_of_day failed in"
+# define SEM_OPEN_FAIL			"sem_open failed in"
+# define BIG_NUMBER_FOR_PHLOS	"You cant use numbers more than\
+ 1000 as count of philosophers\n"
 
 # define SEM_NAME				"MYBRANDNEWSEMAPHOREhuakbas"
 # define SEM_EXIT				"MYSEMAPHORETOEXIThuakbas"
@@ -56,9 +59,9 @@ typedef struct s_data
 	int				time_to_sleep;
 	long long		start_time;
 	pid_t			pid;
-	sem_t			*semaphore_fork;
-	sem_t			*semaphore_exit;
-	sem_t			*semaphore_mute;
+	sem_t			*sem_fork;
+	sem_t			*sem_exit;
+	sem_t			*sem_mute;
 	pthread_t		th_wait_semaphore;
 	pthread_t		th_check_dead;
 	// pthread_mutex_t	mute_data;
@@ -83,5 +86,9 @@ int			routine(t_data *data);
 long long	ft_now(void);
 int			unlock_mutex_return_one(pthread_mutex_t *mutex1,
 				pthread_mutex_t *mutex2);
+void		close_semaphores(sem_t *sem1, sem_t *sem2, sem_t *sem3, int unlink);
+int			announce_dead(t_data *data);
+void		child(t_data data, int *pids);
+void		post_all_semaphor_exit(t_data *data);
 
 #endif //PHILO_H
