@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 13:36:01 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:34:08 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static int	eat(t_data *data)
 	usleep(data->time_to_eat * 1000);
 	sem_post(data->sem_fork);
 	sem_post(data->sem_fork);
-	if (data->food_counter == data->food_max + 2)
+	if (data->food_counter == data->food_max)
 		return (set_or_check_return_code(data, 2));
 	if (set_or_check_return_code(data, 0))
 		return (data->return_code);
