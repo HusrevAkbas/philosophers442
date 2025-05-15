@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 13:46:13 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 13:46:39 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void	*routine(void	*arg)
 		if (philo->timestamp == -1)
 			return (NULL);
 		safe_print(philo, "is thinking");
-		usleep(1000);
+		usleep(200);
 	}
 	return (NULL);
 }
