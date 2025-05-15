@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/15 13:46:24 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:33:23 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,14 @@ void	*ft_free_many(void *one, void *two, void *three, char *message)
 int	safe_print(t_philo *philo, char *message)
 {
 	pthread_mutex_lock(&philo->data->mute_print);
+	pthread_mutex_lock(&philo->data->mute_data);
+	if (*philo->data->who_is_dead && *philo->data->who_is_dead != philo->name)
+	{
+		pthread_mutex_unlock(&philo->data->mute_data);
+		pthread_mutex_unlock(&philo->data->mute_print);
+		return (0);
+	}
+	pthread_mutex_unlock(&philo->data->mute_data);
 	if (!philo)
 	{
 		if (message)

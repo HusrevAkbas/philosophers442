@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/15 13:46:39 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:30:11 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int	eat(t_philo *philo)
 	philo->last_meal = ft_now();
 	pthread_mutex_unlock(&philo->data->mute_data);
 	philo->food_counter++;
-	usleep(philo->time_to_eat * 1000);
+	sleep_disorder(philo->data, philo->data->time_to_eat);
 	pthread_mutex_lock(&philo->data->mute_data);
 	if (philo->food_counter == philo->data->food_max)
 		*philo->data->food_max_reached += 1;
@@ -86,7 +86,7 @@ static int	have_a_nice_sleep(t_philo *philo)
 	if (philo->timestamp == -1)
 		return (1);
 	safe_print(philo, "is sleeping");
-	usleep(philo->time_to_sleep * 1000);
+	sleep_disorder(philo->data, philo->time_to_sleep);
 	if (is_somone_dead_or_food_max_reached(philo->data))
 		return (1);
 	return (0);

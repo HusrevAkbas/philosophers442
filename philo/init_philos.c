@@ -6,11 +6,27 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:06:06 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 14:55:37 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:28:33 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	sleep_disorder(t_data *data, int time)
+{
+	long long	start;
+	long long	now;
+
+	start = ft_now();
+	now = start;
+	while ((now - start) < time)
+	{
+		now = ft_now();
+		if (is_somone_dead_or_food_max_reached(data))
+			return ;
+		usleep(980);
+	}
+}
 
 t_philo	**go_to_bath(t_philo **philos, t_data *data)
 {

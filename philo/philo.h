@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 14:57:24 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:20:35 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int			is_somone_dead_or_food_max_reached(t_data *data);
 t_philo		**init_philos(t_data *data);
 t_philo		**go_to_bath(t_philo **philos, t_data *data);
 long long	ft_now(void);
+void		sleep_disorder(t_data *data, int time);
 int			unlock_mutex_return_one(pthread_mutex_t *mutex1,
 				pthread_mutex_t *mutex2);
 

@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/15 13:53:58 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:33:13 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ static void	*am_i_dead(void	*arg)
 	int		i;
 
 	philos = arg;
-	i = 0;
-	while (philos[i])
+	i = -1;
+	while (philos[++i])
 	{
 		if (philos[0]->data->philo_count < 10)
 			usleep(100);
@@ -74,7 +74,6 @@ static void	*am_i_dead(void	*arg)
 			safe_print(philos[i], "died");
 			return (NULL);
 		}
-		i++;
 	}
 	return (NULL);
 }
