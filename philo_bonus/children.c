@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 13:22:32 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 14:59:47 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:20:33 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	*am_i_dead(void *arg)
 	data = arg;
 	while (1)
 	{
-		usleep(1000);
+		usleep(100);
 		sem_wait(data->sem_mute);
 		if (data->return_code)
 		{
@@ -29,10 +29,10 @@ static void	*am_i_dead(void *arg)
 		data->timestamp = ft_get_timestamp(data->last_meal);
 		if (data->timestamp > data->time_to_die)
 		{
-			data->return_code = 1;
 			sem_post(data->sem_mute);
 			post_all_semaphor_exit(data);
 			announce_dead(data);
+			data->return_code = 1;
 			return (NULL);
 		}
 		sem_post(data->sem_mute);
@@ -106,7 +106,7 @@ void	child(t_data data, int *pids)
 	memset(sem_name, '0', 5);
 	change_sem_name(&data, sem_name);
 	open_semaphore_child(&data, sem_name);
-	usleep(data.name * 100);
+	usleep(data.name * 50);
 	pthread_create(&data.th_wait_semaphore, NULL, wait_for_semaphore, &data);
 	pthread_create(&data.th_check_dead, NULL, am_i_dead, &data);
 	pthread_detach(data.th_wait_semaphore);
@@ -118,7 +118,7 @@ void	child(t_data data, int *pids)
 		usleep(data.time_to_eat * 1100);
 		post_all_semaphor_exit(&data);
 	}
-	usleep(999999);
+	usleep(100);
 	close_semaphores(data.sem_exit, data.sem_fork, data.sem_mute, 0);
 	sem_unlink(sem_name);
 	exit(code);

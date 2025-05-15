@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/14 15:00:48 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:21:22 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static int	eat(t_data *data)
 		return (set_or_check_return_code(data, 3));
 	}
 	sem_post(data->sem_mute);
-	usleep(data->time_to_eat * 1000);
+	sleep_disorder(data, data->time_to_eat);
 	sem_post(data->sem_fork);
 	sem_post(data->sem_fork);
 	if (data->food_counter == data->food_max)
@@ -98,7 +98,7 @@ static int	have_a_nice_sleep(t_data *data)
 {
 	if (safe_print(data, "is sleeping"))
 		return (3);
-	usleep(data->time_to_sleep * 1000);
+	sleep_disorder(data, data->time_to_sleep);
 	sem_wait(data->sem_mute);
 	if (data->return_code)
 	{
@@ -130,7 +130,7 @@ int	routine(t_data *data)
 			return (data->return_code = 3, data->return_code);
 		if (safe_print(data, "is thinking"))
 			return (data->return_code);
-		usleep(1000);
+		usleep(100);
 	}
 	return (data->return_code);
 }

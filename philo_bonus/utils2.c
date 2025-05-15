@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 13:34:21 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:10:08 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,25 @@ void	post_all_semaphor_exit(t_data *data)
 		i++;
 	}
 	sem_post(data->sem_mute);
+}
+
+void	sleep_disorder(t_data *data, int time)
+{
+	long long	start;
+	long long	now;
+
+	start = ft_now();
+	now = start;
+	while ((now - start) < time)
+	{
+		sem_wait(data->sem_mute);
+		now = ft_now();
+		if (data->return_code)
+		{
+			sem_post(data->sem_mute);
+			return ;
+		}
+		sem_post(data->sem_mute);
+		usleep(149);
+	}
 }

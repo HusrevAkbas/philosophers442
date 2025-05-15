@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:51:01 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 15:02:33 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:56:44 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,5 +80,6 @@ void		close_semaphores(sem_t *sem1, sem_t *sem2, sem_t *sem3, int unlink);
 int			announce_dead(t_data *data);
 void		child(t_data data, int *pids);
 void		post_all_semaphor_exit(t_data *data);
+void		sleep_disorder(t_data *data, int time);
 
 #endif //PHILO_H

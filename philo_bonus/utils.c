@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 22:15:34 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 15:01:29 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:13:44 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ int	safe_print(t_data *data, char *message)
 		data->return_code = 3;
 		return (3);
 	}
+	if (data->return_code == 1)
+		return (0);
 	data->timestamp = ft_get_timestamp(data->start_time);
 	if (data->timestamp == -1)
 	{
