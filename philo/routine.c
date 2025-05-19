@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/15 15:30:11 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/19 12:42:46 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,12 @@ static int	take_forks(t_philo *philo)
 	pthread_mutex_lock(first);
 	if (is_somone_dead_or_food_max_reached(philo->data))
 		return (unlock_mutex_return_one(first, NULL));
-	safe_print(philo, "has taken a fork 1");
+	safe_print(philo, "has taken a fork");
 	if (philo->mute_fork2)
 	{
 		pthread_mutex_lock(second);
 		if (is_somone_dead_or_food_max_reached(philo->data))
 			return (unlock_mutex_return_one(first, second));
-		safe_print(philo, "has taken a fork 2");
 	}
 	else
 	{

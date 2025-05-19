@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:06:06 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/15 15:28:33 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/19 12:46:19 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	sleep_disorder(t_data *data, int time)
 		now = ft_now();
 		if (is_somone_dead_or_food_max_reached(data))
 			return ;
-		usleep(980);
+		usleep(200);
 	}
 }
 
