@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 13:22:32 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/15 16:20:33 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:51:45 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	*am_i_dead(void *arg)
 	data = arg;
 	while (1)
 	{
-		usleep(100);
+		usleep(50);
 		sem_wait(data->sem_mute);
 		if (data->return_code)
 		{

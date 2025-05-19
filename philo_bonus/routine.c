@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/15 16:21:22 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:48:13 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,13 @@ static int	take_forks(t_data *data)
 		sem_post(data->sem_fork);
 		return (data->return_code);
 	}
-	if (safe_print(data, "is taking a fork 1"))
+	if (safe_print(data, "is taking a fork"))
 	{
 		sem_post(data->sem_fork);
 		return (data->return_code);
 	}
 	sem_wait(data->sem_fork);
 	if (set_or_check_return_code(data, 0))
-	{
-		sem_post(data->sem_fork);
-		sem_post(data->sem_fork);
-		return (data->return_code);
-	}
-	if (safe_print(data, "is taking a fork 2"))
 	{
 		sem_post(data->sem_fork);
 		sem_post(data->sem_fork);

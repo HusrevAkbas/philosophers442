@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/15 16:10:08 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:50:36 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,6 @@ void	sleep_disorder(t_data *data, int time)
 			return ;
 		}
 		sem_post(data->sem_mute);
-		usleep(149);
+		usleep(100);
 	}
 }
