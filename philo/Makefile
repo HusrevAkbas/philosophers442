@@ -28,6 +28,6 @@ val :
 	valgrind --tool=memcheck  --leak-check=full --show-leak-kinds=all ./$(NAME) 5 810 200 200 10
 
 hel :
-	valgrind --tool=helgrind --history-level=none ./$(NAME) 54 800 200 190 32
+	valgrind --tool=helgrind --history-level=none ./$(NAME) 4 810 200 200 32
 
 .phony : clean c re fclean f all val hel
