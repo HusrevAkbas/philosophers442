@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:06:06 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/19 12:46:19 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/21 13:48:35 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ void	sleep_disorder(t_data *data, int time)
 		now = ft_now();
 		if (is_somone_dead_or_food_max_reached(data))
 			return ;
-		usleep(200);
 	}
 }
 
@@ -66,7 +65,7 @@ static t_philo	**create_philos(t_philo **philos, t_data *data)
 			return (go_to_bath(philos, data));
 		}
 		memset(philos[i], 0, sizeof(t_philo));
-		if (i % 2 == 0)
+		if (i % 2 == 1)
 			philos[i]->hungry = 1;
 		philos[i]->name = i + 1;
 		pthread_mutex_init(&philos[i]->mute_fork, NULL);

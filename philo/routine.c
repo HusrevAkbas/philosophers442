@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/20 11:39:41 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/21 14:15:42 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,7 @@ void	*routine(void	*arg)
 	t_philo	*philo;
 
 	philo = arg;
-	if (philo->name % 2 == 0)
-		sleep_disorder(philo->data, philo->data->time_to_eat);
-	if (philo->name % 2 == 1 && philo->name == philo->data->philo_count)
-		sleep_disorder(philo->data, philo->data->time_to_eat / 2);
-	usleep(philo->name * 10);
+	synch(philo);
 	while (1)
 	{
 		if (is_somone_dead_or_food_max_reached(philo->data))
@@ -109,13 +105,15 @@ void	*routine(void	*arg)
 			return (NULL);
 		if (eat(philo))
 			return (NULL);
-		philo->hungry = 1;
 		if (have_a_nice_sleep(philo))
 			return (NULL);
 		philo->timestamp = ft_get_timestamp(philo->data->start_time);
 		if (philo->timestamp == -1)
 			return (NULL);
 		safe_print(philo, "is thinking");
+		if (!philo->hungry && philo->name == philo->data->philo_count)
+			sleep_disorder(philo->data, philo->time_to_eat);
+		philo->hungry = 1;
 	}
 	return (NULL);
 }
