@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/21 14:15:42 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/24 17:06:24 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,6 @@ void	*routine(void	*arg)
 		if (philo->timestamp == -1)
 			return (NULL);
 		safe_print(philo, "is thinking");
-		if (!philo->hungry && philo->name == philo->data->philo_count)
-			sleep_disorder(philo->data, philo->time_to_eat);
-		philo->hungry = 1;
 	}
 	return (NULL);
 }

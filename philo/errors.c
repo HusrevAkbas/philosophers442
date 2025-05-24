@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 11:39:12 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/21 14:13:33 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/24 17:12:52 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,12 @@ void	synch(t_philo *philo)
 	while (ft_now() < philo->start_time)
 		;
 	philo->timestamp = ft_get_timestamp(philo->data->start_time);
-	safe_print(philo, "is thinking");
 	if (philo->name % 2 == 1)
+	{
+		usleep(350);
+		safe_print(philo, "is thinking");
 		sleep_disorder(philo->data, philo->time_to_eat);
+	}
 	if (philo->name % 2 == 1 && philo->name == philo->data->philo_count)
 		sleep_disorder(philo->data, philo->time_to_eat / 2);
 }
