@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:50:19 by huakbas           #+#    #+#             */
-/*   Updated: 2025/05/19 14:48:13 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/24 16:41:08 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,9 @@ static int	have_a_nice_sleep(t_data *data)
 
 int	routine(t_data *data)
 {
+	while (ft_now() < data->start_time)
+		;
+	usleep(data->name * 4 * (1 + 100 / data->philo_count));
 	while (1)
 	{
 		sem_wait(data->sem_mute);

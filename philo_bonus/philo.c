@@ -6,7 +6,7 @@
 /*   By: huakbas <huakbas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 10:52:30 by husrevakbas       #+#    #+#             */
-/*   Updated: 2025/05/14 15:02:44 by huakbas          ###   ########.fr       */
+/*   Updated: 2025/05/24 16:21:37 by huakbas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ static int	start_child_processes(t_data data, int *pids)
 	int	i;
 
 	i = 0;
-	data.last_meal = ft_now();
-	data.start_time = data.last_meal;
+	data.start_time = ft_now() + data.philo_count * 15;
+	data.last_meal = data.start_time;
 	if (data.last_meal == -1)
 		return (printf("%s start_child_process\n", GET_TIME_OF_DAY_FAIL));
 	while (i < data.philo_count)
